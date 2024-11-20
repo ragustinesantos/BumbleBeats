@@ -15,7 +15,7 @@ export default function TestScreen(): React.JSX.Element {
 
   // Add a list of songs to the queue
   const enqueue = async (tracks: Array<TrackObject>) => {
-    // Clear the queue
+    // Clear the queue before updating the queue
     await TrackPlayer.reset();
 
     // Add passed value to the queue

@@ -5,18 +5,27 @@ import TrackPlayer, {useProgress, RepeatMode} from 'react-native-track-player';
 import {defaultTrack, TrackObject} from './utils/utility';
 
 function Main(): React.JSX.Element {
-  const [trackObject, setTrackObject] = useState<TrackObject>({
+  const [trackToPlay, setTrackToPlay] = useState<TrackObject>({
     ...defaultTrack,
   });
+  const [playlists, setPlaylists] = useState([]);
+  const [playlistToPlay, setPlaylistToPlay] = useState<Array<TrackObject>>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const progress = useProgress();
 
+  // Add a list of songs to the queue
   const enqueue = async (tracks: Array<TrackObject>) => {
+    // Clear the queue
     await TrackPlayer.reset();
+
+    // Add passed value to the queue
     await TrackPlayer.add(tracks);
+
+    // Log queue
     console.log(await TrackPlayer.getQueue());
   };
 
+  // On load, set up player
   useEffect(() => {
     const playerSetup = async () => {
       if (!isInitialized) {
@@ -28,6 +37,7 @@ function Main(): React.JSX.Element {
     playerSetup();
   }, [isInitialized]);
 
+  // Can be deleted. Just getting a sample track from the api for testing
   useEffect(() => {
     const newTrackObject = {...defaultTrack};
 
@@ -41,25 +51,26 @@ function Main(): React.JSX.Element {
           newTrackObject.artist = json.artist.name;
           newTrackObject.album = json.album.title;
           newTrackObject.artwork = json.album.cover_xl;
-          setTrackObject(newTrackObject);
+          setTrackToPlay(newTrackObject);
         })
         .catch(err => console.log('Error encountered: ' + err));
     }
   }, [isInitialized]);
 
+  // Can be deleted. Just queueing a sample track from the api for testing
   useEffect(() => {
-    if (isInitialized && trackObject) {
-      enqueue([trackObject]);
+    if (isInitialized && trackToPlay) {
+      enqueue([trackToPlay]);
     }
-  }, [trackObject, isInitialized]);
+  }, [trackToPlay, isInitialized]);
 
   return (
     <View>
       <Image
-        source={{uri: trackObject.artwork}}
+        source={{uri: trackToPlay.artwork}}
         style={{width: 355, height: 355}}
       />
-      <Text>{trackObject.artist}</Text>
+      <Text>{trackToPlay.artist}</Text>
       <TouchableOpacity onPress={() => TrackPlayer.seekTo(0)}>
         <Text>Replay</Text>
       </TouchableOpacity>

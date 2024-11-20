@@ -8,9 +8,14 @@ function Main(): React.JSX.Element {
   const [trackObject, setTrackObject] = useState<TrackObject>({
     ...defaultTrack,
   });
-  const [trackQueue, setTrackQueue] = useState<TrackObject[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const progress = useProgress();
+
+  const enqueue = async (tracks: Array<TrackObject>) => {
+    await TrackPlayer.reset();
+    await TrackPlayer.add(tracks);
+    console.log(await TrackPlayer.getQueue());
+  };
 
   useEffect(() => {
     const playerSetup = async () => {
@@ -43,15 +48,8 @@ function Main(): React.JSX.Element {
   }, [isInitialized]);
 
   useEffect(() => {
-    const addTrack = async () => {
-      await TrackPlayer.reset();
-      await TrackPlayer.add([trackObject]);
-      await TrackPlayer.setRepeatMode(RepeatMode.Off);
-      console.log(await TrackPlayer.getQueue());
-    };
-
     if (isInitialized && trackObject) {
-      addTrack();
+      enqueue([trackObject]);
     }
   }, [trackObject, isInitialized]);
 

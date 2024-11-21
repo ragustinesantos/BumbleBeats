@@ -1,47 +1,36 @@
-/* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import Playing from './screens/Playing';
-import HomeStackNav from './navigation/HomeStackNav';
-import PlaylistStackNav from './navigation/PlaylistStackNav';
-import SearchStackNav from './navigation/SearchStackNav';
-import TabIcon from './components/TabIcon';
-
-const AppNav = createBottomTabNavigator();
+import TrackPlayer, {RepeatMode} from 'react-native-track-player';
+import Login from './screens/Login';
+import DrawerNav from './navigation/DrawerNav';
 
 function Main(): React.JSX.Element {
-  return (
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const handleLogin = (user: string) => {
+    setIsLoggedIn(true);
+    setUsername(user);
+  };
+
+  // On load, set up player
+  useEffect(() => {
+    const playerSetup = async () => {
+      if (!isInitialized) {
+        await TrackPlayer.setupPlayer();
+        await TrackPlayer.setRepeatMode(RepeatMode.Off);
+        setIsInitialized(true);
+      }
+    };
+    playerSetup();
+  }, [isInitialized]);
+
+  return !isLoggedIn ? (
+    <Login handleLogin={handleLogin} />
+  ) : (
     <NavigationContainer>
-      <AppNav.Navigator
-        screenOptions={({route}) => ({
-          tabBarIcon: ({
-            focused,
-            color,
-            size,
-          }: {
-            focused: boolean;
-            color: string;
-            size: number;
-          }) => {
-            return (
-              <TabIcon
-                route={route.name}
-                focused={focused}
-                color={color}
-                size={size}
-              />
-            );
-          },
-          headerShown: false,
-          tabBarShowLabel: false,
-          tabBarStyle: {backgroundColor: '#222A2C'},
-        })}>
-        <AppNav.Screen name="Home" component={HomeStackNav} />
-        <AppNav.Screen name="Playlists" component={PlaylistStackNav} />
-        <AppNav.Screen name="Playing" component={Playing} />
-        <AppNav.Screen name="Search" component={SearchStackNav} />
-      </AppNav.Navigator>
+      <DrawerNav username={username} />
     </NavigationContainer>
   );
 }

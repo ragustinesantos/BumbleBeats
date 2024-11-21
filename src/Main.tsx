@@ -1,47 +1,25 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
+import 'react-native-gesture-handler';
+import '../gesture-handler';
+import React, {useState} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
-import Playing from './screens/Playing';
-import HomeStackNav from './navigation/HomeStackNav';
-import PlaylistStackNav from './navigation/PlaylistStackNav';
-import SearchStackNav from './navigation/SearchStackNav';
-import TabIcon from './components/TabIcon';
-
-const AppNav = createBottomTabNavigator();
+import Login from './screens/Login';
+import DrawerNav from './navigation/DrawerNav';
+import TabNav from './navigation/TabNav';
 
 function Main(): React.JSX.Element {
-  return (
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  return !isLoggedIn ? (
+    <Login handleLogin={handleLogin} />
+  ) : (
     <NavigationContainer>
-      <AppNav.Navigator
-        screenOptions={({route}) => ({
-          tabBarIcon: ({
-            focused,
-            color,
-            size,
-          }: {
-            focused: boolean;
-            color: string;
-            size: number;
-          }) => {
-            return (
-              <TabIcon
-                route={route.name}
-                focused={focused}
-                color={color}
-                size={size}
-              />
-            );
-          },
-          headerShown: false,
-          tabBarShowLabel: false,
-          tabBarStyle: {backgroundColor: '#222A2C'},
-        })}>
-        <AppNav.Screen name="Home" component={HomeStackNav} />
-        <AppNav.Screen name="Playlists" component={PlaylistStackNav} />
-        <AppNav.Screen name="Playing" component={Playing} />
-        <AppNav.Screen name="Search" component={SearchStackNav} />
-      </AppNav.Navigator>
+      <TabNav />
     </NavigationContainer>
   );
 }

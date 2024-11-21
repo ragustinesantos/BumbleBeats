@@ -10,7 +10,6 @@ import {DrawerNavigationProp} from '@react-navigation/drawer';
 const HomeStack = createNativeStackNavigator();
 
 type DrawerParamList = {
-  HomeStackNav: undefined;
   Settings: undefined;
   Profile: undefined;
 };

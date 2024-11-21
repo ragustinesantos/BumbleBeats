@@ -1,8 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
-import 'react-native-gesture-handler';
-import '../gesture-handler';
 import React, {useState} from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import Login from './screens/Login';
 import DrawerNav from './navigation/DrawerNav';
@@ -19,7 +16,7 @@ function Main(): React.JSX.Element {
     <Login handleLogin={handleLogin} />
   ) : (
     <NavigationContainer>
-      <TabNav />
+      <DrawerNav />
     </NavigationContainer>
   );
 }

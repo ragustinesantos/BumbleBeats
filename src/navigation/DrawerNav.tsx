@@ -10,8 +10,10 @@ const Drawer = createDrawerNavigator();
 
 export default function DrawerNav({
   username,
+  logout,
 }: {
   username: string;
+  logout: () => void;
 }): React.JSX.Element {
   return (
     <Drawer.Navigator
@@ -27,7 +29,7 @@ export default function DrawerNav({
         drawerLabelStyle: {fontSize: 16},
       }}
       drawerContent={props => (
-        <CustomDrawerContent {...props} username={username} />
+        <CustomDrawerContent {...props} username={username} logout={logout} />
       )}>
       <Drawer.Screen
         name="APP"
@@ -35,7 +37,11 @@ export default function DrawerNav({
         options={{headerShown: false}}
       />
       <Drawer.Screen name="SETTINGS" component={Settings} />
-      <Drawer.Screen name="PROFILE" component={Profile} />
+      <Drawer.Screen
+        name="PROFILE"
+        component={Profile}
+        options={{drawerLabel: () => null}}
+      />
     </Drawer.Navigator>
   );
 }

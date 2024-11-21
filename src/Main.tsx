@@ -14,6 +14,11 @@ function Main(): React.JSX.Element {
     setUsername(user);
   };
 
+  const handleLogout = () => {
+    setUsername('');
+    setIsLoggedIn(false);
+  };
+
   // On load, set up player
   useEffect(() => {
     const playerSetup = async () => {
@@ -30,7 +35,7 @@ function Main(): React.JSX.Element {
     <Login handleLogin={handleLogin} />
   ) : (
     <NavigationContainer>
-      <DrawerNav username={username} />
+      <DrawerNav username={username} logout={handleLogout} />
     </NavigationContainer>
   );
 }

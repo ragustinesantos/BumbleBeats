@@ -12,7 +12,8 @@ export default function SearchStackNav(): React.JSX.Element {
         headerTitleAlign: 'center',
         headerTintColor: '#F2F2F2',
         headerStyle: {backgroundColor: '#222A2C'},
-      }}>
+      }}
+      initialRouteName="SEARCH">
       <SearchStack.Screen name="SEARCH" component={Search} />
       <SearchStack.Screen name="PLAYING" component={Playing} />
     </SearchStack.Navigator>

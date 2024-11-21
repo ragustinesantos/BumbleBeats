@@ -32,7 +32,8 @@ export default function HomeStackNav(): React.JSX.Element {
             />
           </TouchableOpacity>
         ),
-      }}>
+      }}
+      initialRouteName="HOME">
       <HomeStack.Screen name="HOME" component={Home} />
       <HomeStack.Screen name="PLAYING" component={Playing} />
     </HomeStack.Navigator>

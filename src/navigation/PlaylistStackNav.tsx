@@ -13,7 +13,8 @@ export default function PlaylistStackNav(): React.JSX.Element {
         headerTitleAlign: 'center',
         headerTintColor: '#F2F2F2',
         headerStyle: {backgroundColor: '#222A2C'},
-      }}>
+      }}
+      initialRouteName="PLAYLISTS">
       <PlaylistStack.Screen name="PLAYLISTS" component={PlaylistList} />
       <PlaylistStack.Screen name="PLAYLIST" component={PlaylistAccessed} />
       <PlaylistStack.Screen name="PLAYING" component={Playing} />

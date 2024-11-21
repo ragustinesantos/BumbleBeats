@@ -15,15 +15,17 @@ type DrawerParamList = {
 };
 
 export default function HomeStackNav(): React.JSX.Element {
-  const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
+  const drawerNavigation =
+    useNavigation<DrawerNavigationProp<DrawerParamList>>();
   return (
     <HomeStack.Navigator
       screenOptions={{
         headerTitleAlign: 'center',
         headerTintColor: '#F2F2F2',
         headerStyle: {backgroundColor: '#222A2C'},
+        headerTitleStyle: {fontSize: 20},
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
+          <TouchableOpacity onPress={() => drawerNavigation.openDrawer()}>
             <Image
               style={styles.hmbrgrIcon}
               source={require('../assets/nav-icons/list.png')}
@@ -39,8 +41,8 @@ export default function HomeStackNav(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   hmbrgrIcon: {
-    width: 32,
-    height: 32,
+    width: 24,
+    height: 24,
     tintColor: '#F2F2F2',
   },
 });

@@ -1,4 +1,3 @@
-import {Link} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {
   View,
@@ -12,7 +11,7 @@ import {
 export default function Login({
   handleLogin,
 }: {
-  handleLogin: () => void;
+  handleLogin: (user: string) => void;
 }): React.JSX.Element {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -54,7 +53,7 @@ export default function Login({
             />
           </View>
         </View>
-        <TouchableOpacity style={styles.btnStyle} onPress={handleLogin}>
+        <TouchableOpacity style={styles.btnStyle} onPress={() => handleLogin(username)}>
           <Text style={styles.btnTxt}>Login</Text>
         </TouchableOpacity>
       </View>

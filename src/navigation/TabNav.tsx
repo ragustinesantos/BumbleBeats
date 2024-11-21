@@ -31,10 +31,12 @@ export default function TabNav(): React.JSX.Element {
             />
           );
         },
+        headerTitleStyle: {fontSize: 20},
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {backgroundColor: '#222A2C'},
-      })}>
+      })}
+      initialRouteName="Home">
       <AppNav.Screen name="Home" component={HomeStackNav} />
       <AppNav.Screen name="Playlists" component={PlaylistStackNav} />
       <AppNav.Screen name="Playing" component={Playing} />

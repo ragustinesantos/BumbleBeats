@@ -50,10 +50,13 @@ export default function Login({
               placeholder="Enter Password..."
               value={password}
               onChangeText={handlePassword}
+              secureTextEntry={true}
             />
           </View>
         </View>
-        <TouchableOpacity style={styles.btnStyle} onPress={() => handleLogin(username)}>
+        <TouchableOpacity
+          style={styles.btnStyle}
+          onPress={() => handleLogin(username)}>
           <Text style={styles.btnTxt}>Login</Text>
         </TouchableOpacity>
       </View>

@@ -7,6 +7,7 @@ import App from './App';
 import {name as appName} from './app.json';
 import Main from './src/Main';
 import TrackPlayer from 'react-native-track-player';
+import TestScreen from './src/screens/TestScreen';
 
 AppRegistry.registerComponent(appName, () => Main);
 

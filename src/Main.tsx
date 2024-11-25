@@ -1,16 +1,43 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
-import {TouchableOpacity, View, Text, Image} from 'react-native';
-import TrackPlayer, {useProgress, RepeatMode} from 'react-native-track-player';
-import {defaultTrack, TrackObject} from './utils/utility';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import TestScreen from './screens/TestScreen';
-
-const AppNav = createBottomTabNavigator();
+import TrackPlayer, {RepeatMode} from 'react-native-track-player';
+import Login from './screens/Login';
+import DrawerNav from './navigation/DrawerNav';
 
 function Main(): React.JSX.Element {
-  return <TestScreen />;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const handleLogin = (user: string) => {
+    setIsLoggedIn(true);
+    setUsername(user);
+  };
+
+  const handleLogout = () => {
+    setUsername('');
+    setIsLoggedIn(false);
+  };
+
+  // On load, set up player
+  useEffect(() => {
+    const playerSetup = async () => {
+      if (!isInitialized) {
+        await TrackPlayer.setupPlayer();
+        await TrackPlayer.setRepeatMode(RepeatMode.Off);
+        setIsInitialized(true);
+      }
+    };
+    playerSetup();
+  }, [isInitialized]);
+
+  return !isLoggedIn ? (
+    <Login handleLogin={handleLogin} />
+  ) : (
+    <NavigationContainer>
+      <DrawerNav username={username} logout={handleLogout} />
+    </NavigationContainer>
+  );
 }
 
 export default Main;

@@ -19,7 +19,7 @@ export default function Search(): React.JSX.Element {
       <View style={styles.searchBox}>
         <Image
           style={styles.searchIcon}
-          source={require('./../../assets/nav-icons/magnifying-glass.png')}
+          source={require('./../assets/nav-icons/magnifying-glass.png')}
         />
 
         <TextInput

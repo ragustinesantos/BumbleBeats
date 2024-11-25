@@ -10,31 +10,31 @@ type genreCardParameters = {
 export default function GenreCard(params: genreCardParameters): React.JSX.Element {
 
   const images = {
-    jazz: require('./../../assets/genres/jazz.jpeg'),
-    hits: require('./../../assets/genres/hits.png'),
-    rock: require('./../../assets/genres/rock.jpg'),
-    classical: require('./../../assets/genres/classical.jpg'),
-    playlists: require('./../../assets/genres/playlist.png'),
-    pop: require('./../../assets/genres/pop.png'),
-    blues: require('./../../assets/genres/blues.png'),
-    hiphop: require('./../../assets/genres/hiphop.png'),
-    kpop: require('./../../assets/genres/kpop.png'),
-    radio: require('./../../assets/genres/radio.png'),
+    jazz: require('./../assets/genres/jazz.jpeg'),
+    hits: require('./../assets/genres/hits.png'),
+    rock: require('./../assets/genres/rock.jpg'),
+    classical: require('./../assets/genres/classical.jpg'),
+    playlists: require('./../assets/genres/playlist.png'),
+    pop: require('./../assets/genres/pop.png'),
+    blues: require('./../assets/genres/blues.png'),
+    hiphop: require('./../assets/genres/hiphop.png'),
+    kpop: require('./../assets/genres/kpop.png'),
+    radio: require('./../assets/genres/radio.png'),
   };
 
   type ImageKeys = keyof typeof images;
 
   const icons = {
-    jazz: require('./../../assets/genres/icons/jazz.png'),
-    hits: require('./../../assets/genres/icons/hits.png'),
-    rock: require('./../../assets/genres/icons/rock.png'),
-    classical: require('./../../assets/genres/icons/classical.png'),
-    playlists: require('./../../assets/genres/icons/playlist.png'),
-    pop: require('./../../assets/genres/icons/pop.png'),
-    blues: require('./../../assets/genres/icons/blues.png'),
-    hiphop: require('./../../assets/genres/icons/hiphop.png'),
-    kpop: require('./../../assets/genres/icons/kpop.png'),
-    radio: require('./../../assets/genres/icons/radio.png'),
+    jazz: require('./../assets/genres/icons/jazz.png'),
+    hits: require('./../assets/genres/icons/hits.png'),
+    rock: require('./../assets/genres/icons/rock.png'),
+    classical: require('./../assets/genres/icons/classical.png'),
+    playlists: require('./../assets/genres/icons/playlist.png'),
+    pop: require('./../assets/genres/icons/pop.png'),
+    blues: require('./../assets/genres/icons/blues.png'),
+    hiphop: require('./../assets/genres/icons/hiphop.png'),
+    kpop: require('./../assets/genres/icons/kpop.png'),
+    radio: require('./../assets/genres/icons/radio.png'),
   };
 
   return (

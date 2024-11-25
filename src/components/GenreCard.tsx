@@ -1,11 +1,11 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 
 type genreCardParameters = {
-  name: string,
-  image: string,
-  icon: string,
-}
+  name: string;
+  image: string;
+  icon: string;
+};
 
 const images = {
   jazz: require('./../assets/genres/jazz.jpeg'),
@@ -35,20 +35,18 @@ const icons = {
 
 type ImageKeys = keyof typeof images;
 
-export default function GenreCard(params: genreCardParameters): React.JSX.Element {
-
+export default function GenreCard(
+  params: genreCardParameters,
+): React.JSX.Element {
   return (
     <View style={styles.genreContainer}>
-
       <Image
         style={styles.genreImg}
         source={images[params.image as ImageKeys]}
       />
 
       <View style={styles.labelContainer}>
-        <Text style={styles.genreName}>
-          {params.name}
-        </Text>
+        <Text style={styles.genreName}>{params.name}</Text>
         <Image
           style={styles.genreIcon}
           source={icons[params.image as ImageKeys]}
@@ -62,14 +60,18 @@ const styles = StyleSheet.create({
   genreContainer: {
     height: 180,
     width: 180,
-    borderWidth: 1,
+    backgroundColor: '#ffffff',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.25,
+    shadowColor: '#000',
+    shadowRadius: 10,
+    elevation: 5,
     borderRadius: 6,
   },
 
   genreImg: {
     height: '70%',
     width: '100%',
-    borderWidth: 1,
     borderTopLeftRadius: 6,
     borderTopRightRadius: 6,
   },
@@ -89,12 +91,12 @@ const styles = StyleSheet.create({
   genreName: {
     fontSize: 20,
     color: '#FFFFFF',
-    fontWeight: '600'
+    fontWeight: '600',
   },
 
   genreIcon: {
     height: 35,
     width: 35,
     tintColor: '#FFFFFF',
-  }
+  },
 });

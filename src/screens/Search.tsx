@@ -62,7 +62,10 @@ export default function Search(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   pageContainer: {
-    margin: 20
+    paddingTop: 20,
+    paddingRight: 20,
+    paddingLeft: 20,
+    paddingBottom: 90,
   },
 
   searchBox: {

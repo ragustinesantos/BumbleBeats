@@ -20,9 +20,13 @@ export default function RecentlyPlayedCard(params: recentlyPlayedParams): React.
 
 const styles = StyleSheet.create({
   playedContainer: {
-    borderColor: '#000000',
-    borderWidth: 1,
+    backgroundColor: '#ffffff',
     borderRadius: 10,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.25,
+    shadowColor: '#000',
+    shadowRadius: 10,
+    elevation: 5,
     marginVertical: 5,
     padding: 10,
     display: 'flex',

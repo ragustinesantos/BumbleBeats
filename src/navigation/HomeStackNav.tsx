@@ -17,6 +17,7 @@ type DrawerParamList = {
 export default function HomeStackNav(): React.JSX.Element {
   const drawerNavigation =
     useNavigation<DrawerNavigationProp<DrawerParamList>>();
+
   return (
     <HomeStack.Navigator
       screenOptions={{

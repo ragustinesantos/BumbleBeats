@@ -1,26 +1,28 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import {View, Text, Image, StyleSheet} from 'react-native';
 
 type SongListCardParams = {
-  artwork: string,
-  title: string,
-  artist: string,
+  artwork: string;
+  title: string;
+  artist: string;
 };
 
-export default function SongListCard(params : SongListCardParams): React.JSX.Element{
-    const artwork = params.artwork;
-    const title = params.title;
-    const artist = params.artist;
-    
-    return (
-        <View style={styles.container}>
-            <Image source={{ uri: artwork }} style={styles.songArtwork} />
-            <View style={styles.songInfo}>
-                <Text style={styles.songTitle}>{title}</Text>
-                <Text style={styles.songArtist}>{artist}</Text>
-            </View>
-        </View>
-    );
+export default function SongListCard(
+  params: SongListCardParams,
+): React.JSX.Element {
+  const artwork = params.artwork;
+  const title = params.title;
+  const artist = params.artist;
+
+  return (
+    <View style={styles.container}>
+      <Image source={{uri: artwork}} style={styles.songArtwork} />
+      <View style={styles.songInfo}>
+        <Text style={styles.songTitle}>{title}</Text>
+        <Text style={styles.songArtist}>{artist}</Text>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -51,6 +53,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'black',
   },
-
 });
-

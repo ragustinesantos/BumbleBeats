@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, Image, StyleSheet} from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 
 type TabIconParams = {
   route: string;
@@ -48,8 +48,8 @@ export default function TabIcon(params: TabIconParams): React.JSX.Element {
 const style = StyleSheet.create({
   iconView: {
     borderRadius: 10,
-    overflow: 'hidden',
     padding: 5,
+    margin: 15,
   },
   iconImg: {
     resizeMode: 'contain',

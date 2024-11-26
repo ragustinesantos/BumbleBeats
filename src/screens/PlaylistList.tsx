@@ -1,22 +1,29 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import PlaylistCard from '../components/PlaylistCard';
+import {defaultPlaylist, PlaylistObject} from '../utils/utility';
 
 export default function PlaylistList({
-  route,
   navigation,
 }: {
-  route: any;
   navigation: any;
 }): React.JSX.Element {
-  // const {playlistList} = route.params;
-  const [playlistList, setPlaylistList] = useState([]);
 
-  const mappedPlaylists = playlistList.map(() => {
+  const [playlistList, setPlaylistList] = useState<PlaylistObject[]>([
+    {...defaultPlaylist},
+  ]);
+
+  const mappedPlaylists = playlistList.map((playlist, index) => {
     return (
-      <View>
-        <PlaylistCard />
-      </View>
+      <TouchableOpacity
+        key={index}
+        onPress={() => navigation.navigate('PLAYLIST', playlist)}>
+        <PlaylistCard
+          playlistName={playlist.playlistName}
+          numOfSongs={playlist.numOfSongs}
+          artwork={playlist.tracks[0].artwork}
+        />
+      </TouchableOpacity>
     );
   });
 

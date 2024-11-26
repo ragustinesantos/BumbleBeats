@@ -33,7 +33,7 @@ export default function SettingItem(params: settingItemParameters): React.JSX.El
                 source={require('./../assets/nav-icons/caret-right.png')}
             />
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     item: {
         width: '80%',
         height: 60,
-        borderWidth: 1,
         borderRadius: 6,
         borderColor: '#D3D3D3',
         display: 'flex',

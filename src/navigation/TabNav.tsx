@@ -5,7 +5,7 @@ import HomeStackNav from '../navigation/HomeStackNav';
 import PlaylistStackNav from '../navigation/PlaylistStackNav';
 import SearchStackNav from '../navigation/SearchStackNav';
 import TabIcon from '../components/TabIcon';
-import PlayingStackNav from './PlayingStackNav';
+import Playing from '../screens/Playing';
 
 const AppNav = createBottomTabNavigator();
 
@@ -36,10 +36,20 @@ export default function TabNav(): React.JSX.Element {
         tabBarStyle: {backgroundColor: '#222A2C'},
       })}
       initialRouteName="Home">
-      <AppNav.Screen name="Home" component={HomeStackNav} />
+      <AppNav.Screen
+        name="Home"
+        component={HomeStackNav}
+      />
       <AppNav.Screen name="Playlists" component={PlaylistStackNav} />
-      <AppNav.Screen name="Playing" component={PlayingStackNav} />
-      <AppNav.Screen name="Search" component={SearchStackNav} />
+      <AppNav.Screen
+        name="Playing"
+        component={Playing}
+        initialParams={{source: 'Tab'}}
+      />
+      <AppNav.Screen
+        name="Search"
+        component={SearchStackNav}
+      />
     </AppNav.Navigator>
   );
 }

@@ -3,6 +3,8 @@ import React, {useEffect, useState} from 'react';
 import {TouchableOpacity, View, Text, Image} from 'react-native';
 import TrackPlayer, {useProgress, RepeatMode} from 'react-native-track-player';
 import {defaultTrack, TrackObject} from '../utils/utility';
+import PlaylistCard from '../components/PlaylistCard';
+import SongModal from '../components/SongModal';
 
 export default function TestScreen(): React.JSX.Element {
   const [trackToPlay, setTrackToPlay] = useState<TrackObject>({
@@ -11,6 +13,7 @@ export default function TestScreen(): React.JSX.Element {
   const [playlists, setPlaylists] = useState([]);
   const [playlistToPlay, setPlaylistToPlay] = useState<Array<TrackObject>>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
   const progress = useProgress();
 
   // Add a list of songs to the queue
@@ -64,6 +67,22 @@ export default function TestScreen(): React.JSX.Element {
     }
   }, [trackToPlay, isInitialized]);
 
+
+  const playlist = {
+    playlistName: 'Chill Vibes',
+    numOfSongs: 14,
+    tracks: [
+      {
+        id: 1,
+        title: 'Song 1',
+        url: 'https://example.com/song1.mp3',
+        artist: 'Artist',
+        album: 'Album',
+        artwork: 'https://via.placeholder.com/150',
+      },
+    ],
+  };
+
   return (
     <View>
       <Image
@@ -82,6 +101,19 @@ export default function TestScreen(): React.JSX.Element {
       </TouchableOpacity>
       <Text>{progress.position}</Text>
       <Text>{progress.buffered}</Text>
+      {/* <PlaylistCard
+        playlistName={playlist.playlistName}
+        numOfSongs={playlist.numOfSongs}
+        artwork={playlist.tracks[0].artwork}
+        onPress={() => console.log('Playlist card pressed')}
+      /> */}
+
+      <SongModal
+        isVisible={modalVisible}
+        artwork={trackToPlay.artwork}
+        title={trackToPlay.title}
+        artist={trackToPlay.artist}
+      />
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import Slider from '@react-native-community/slider';
-import TrackPlayer, { useProgress } from 'react-native-track-player';
+import TrackPlayer, {useProgress} from 'react-native-track-player';
 
 export default function ProgressBar(): React.JSX.Element {
   const {position, duration} = useProgress();
@@ -13,7 +13,7 @@ export default function ProgressBar(): React.JSX.Element {
         minimumValue={0}
         maximumValue={duration}
         onValueChange={value => TrackPlayer.seekTo(value)}
-        thumbTintColor='#E9A941'
+        thumbTintColor="#E9A941"
       />
       <View style={styles.timeContainer}>
         <Text style={styles.timeTxt}>{formatTime(position)}</Text>
@@ -24,7 +24,8 @@ export default function ProgressBar(): React.JSX.Element {
 }
 
 // Time format
-const formatTime = (seconds: number) => `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
+const formatTime = (seconds: number) =>
+  `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
 
 const styles = StyleSheet.create({
   container: {
@@ -34,11 +35,10 @@ const styles = StyleSheet.create({
   timeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
 
   timeTxt: {
     fontSize: 12,
   },
-
 });

@@ -35,7 +35,10 @@ function Main(): React.JSX.Element {
     <Login handleLogin={handleLogin} />
   ) : (
     <NavigationContainer>
-      <DrawerNav username={username} logout={handleLogout} />
+      <DrawerNav
+        username={username}
+        logout={handleLogout}
+      />
     </NavigationContainer>
   );
 }

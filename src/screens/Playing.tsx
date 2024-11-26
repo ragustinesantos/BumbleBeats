@@ -1,43 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import TrackPlayer, { useProgress, RepeatMode } from 'react-native-track-player';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useCallback, useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import TrackPlayer from 'react-native-track-player';
 import ProgressBar from '../components/ProgressBar';
+import {defaultPlayingObject, PlayingObject} from '../utils/utility';
+import {useFocusEffect} from '@react-navigation/native';
 
-export default function Playing(): React.JSX.Element {
-  const [track, setTrack] = useState({
-    title: 'Song Title',
-    artist: 'Artist Name',
-    artwork: '',
-  });
+export default function Playing({
+  route,
+  navigation,
+}: {
+  route: any;
+  navigation: any;
+}): React.JSX.Element {
+  const {source} = route.params;
+
+  const [track, setTrack] = useState<PlayingObject>({...defaultPlayingObject});
+
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
-    const fetchTrackData = async () => {
-      const trackId = await TrackPlayer.getCurrentTrack();
-      
-      if (trackId !== null) {
-        const trackData = await TrackPlayer.getTrack(trackId);
-        if (trackData) {
-          setTrack({
-            title: trackData.title || '',
-            artist: trackData.artist || '',
-            artwork: trackData.artwork || '',
-          });
+    if (source === 'Home') {
+      navigation.setOptions({
+        headerLeft: undefined,
+      });
+    }
+  }, [navigation]);
+
+  // Triggers a re-render when the screen comes into focus or selected
+  // Used to update the Playing Screen on TabNav with the information on the Active Track
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTrack = async () => {
+        try {
+          const playingTrack = await TrackPlayer.getActiveTrack();
+          if (playingTrack) {
+            setTrack({
+              title: playingTrack?.title,
+              artist: playingTrack?.artist,
+              artwork: playingTrack?.artwork,
+            });
+            TrackPlayer.play();
+            setPlaying(true);
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } else {
-        console.log("Nothing playing");
-      }
-    };
-  
-    fetchTrackData();
-  }, []);
+      };
+      fetchTrack();
+    }, []),
+  );
 
   // Pausing/playing
   const togglePlayPause = async () => {
     if (playing) {
       await TrackPlayer.pause();
-    } 
-    else {
+    } else {
       await TrackPlayer.play();
     }
     setPlaying(!playing);
@@ -57,8 +75,14 @@ export default function Playing(): React.JSX.Element {
 
   return (
     <View style={style.container}>
-
-      <Image source={{uri: track.artwork}} style={style.art} />
+      <Image
+        source={
+          track.artwork
+            ? {uri: track.artwork}
+            : {uri: 'https://via.placeholder.com/150'}
+        }
+        style={style.art}
+      />
 
       <View style={style.trackInfo}>
         <Text style={style.title}>{track.title}</Text>
@@ -68,30 +92,48 @@ export default function Playing(): React.JSX.Element {
       <ProgressBar />
 
       <View style={style.controls}>
-
-        <TouchableOpacity onPress={()=> console.log('Looped')} style={style.controlBtn}>
-          <Image source={require('../assets/nav-icons/shuffle-angular.png')} style={style.extraControlIcon} />
+        <TouchableOpacity
+          onPress={() => console.log('Looped')}
+          style={style.controlBtn}>
+          <Image
+            source={require('../assets/nav-icons/shuffle-angular.png')}
+            style={style.extraControlIcon}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={skipToPrevious} style={style.controlBtn}>
-          <Image source={require('../assets/nav-icons/skip-back.png')} style={style.secondaryControlIcon} />
+          <Image
+            source={require('../assets/nav-icons/skip-back.png')}
+            style={style.secondaryControlIcon}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={togglePlayPause} style={style.controlBtn}>
           <Image
-            source={playing ? require('../assets/nav-icons/pause.png') : require('../assets/nav-icons/play.png')}
+            source={
+              playing
+                ? require('../assets/nav-icons/pause.png')
+                : require('../assets/nav-icons/play.png')
+            }
             style={style.primaryControlIcon}
           />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={skipToNext} style={style.controlBtn}>
-          <Image source={require('../assets/nav-icons/skip-forward.png')} style={style.secondaryControlIcon} />
+          <Image
+            source={require('../assets/nav-icons/skip-forward.png')}
+            style={style.secondaryControlIcon}
+          />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={()=> console.log('Loved')} style={style.controlBtn}>
-          <Image source={require('../assets/nav-icons/heart.png')} style={style.extraControlIcon} />
+        <TouchableOpacity
+          onPress={() => console.log('Loved')}
+          style={style.controlBtn}>
+          <Image
+            source={require('../assets/nav-icons/heart.png')}
+            style={style.extraControlIcon}
+          />
         </TouchableOpacity>
-
       </View>
     </View>
   );
@@ -111,7 +153,7 @@ const style = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 20,
     marginTop: 30,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
   },
 
   trackInfo: {
@@ -124,7 +166,7 @@ const style = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     marginBottom: 5,
-    color: 'black'
+    color: 'black',
   },
 
   artist: {
@@ -140,7 +182,7 @@ const style = StyleSheet.create({
   controls: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
   },
 
   controlBtn: {
@@ -159,7 +201,6 @@ const style = StyleSheet.create({
 
   extraControlIcon: {
     width: 30,
-    height: 30
-  }
-
+    height: 30,
+  },
 });

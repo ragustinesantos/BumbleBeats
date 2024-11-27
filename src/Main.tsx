@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import TrackPlayer, { RepeatMode } from 'react-native-track-player';
+/* eslint-disable @typescript-eslint/no-shadow */
+import React, {useState, useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import TrackPlayer, {RepeatMode} from 'react-native-track-player';
 import Login from './screens/Login';
 import DrawerNav from './navigation/DrawerNav';
-import { useUserAuth } from './_utils/auth-context';
+import {useUserAuth} from './_utils/auth-context';
 
 function Main(): React.JSX.Element {
   const [username, setUsername] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const { user, signInWithEmail, firebaseSignOut } = useUserAuth() || {};
+  const {user, signInWithEmail, firebaseSignOut} = useUserAuth() || {};
 
-  const handleLogin = async (username: string, pass: string, err: (hasError: boolean) => void) => {
-
+  const handleLogin = async (
+    username: string,
+    pass: string,
+    err: (hasError: boolean) => void,
+  ) => {
     if (signInWithEmail) {
       try {
         await signInWithEmail(username, pass, err);
@@ -41,17 +45,12 @@ function Main(): React.JSX.Element {
     playerSetup();
   }, [isInitialized]);
 
-  return (
-    !user ? (
-      <Login handleLogin={handleLogin} />
-    ) : (
-      <NavigationContainer>
-        <DrawerNav
-          username={username}
-          logout={handleLogout}
-        />
-      </NavigationContainer>
-    )
+  return !user ? (
+    <Login handleLogin={handleLogin} />
+  ) : (
+    <NavigationContainer>
+      <DrawerNav username={username} logout={handleLogout} />
+    </NavigationContainer>
   );
 }
 

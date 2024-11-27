@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   TextInput,
@@ -11,7 +11,7 @@ import {
 export default function Login({
   handleLogin,
 }: {
-  handleLogin: (user: string) => void;
+  handleLogin: (user: string, pass: string) => void;
 }): React.JSX.Element {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +19,14 @@ export default function Login({
   const handleUsername = (text: string) => setUsername(text);
   const handlePassword = (text: string) => setPassword(text);
 
-  const handleCreateAccount = () => {
+  // const { createUserWithEmail } = useUserAuth() || {};
+
+  const handleCreateAccount = async () => {
+    // TESTING CODE only while create account feature is ongoing
+    // const newEmail = 'emailname@gmail.com'
+    // const newPass = 'Testing1234'
+    // if (createUserWithEmail)
+    //   createUserWithEmail(newEmail, newPass);
     console.log('Create Account');
   };
 
@@ -56,7 +63,7 @@ export default function Login({
         </View>
         <TouchableOpacity
           style={styles.btnStyle}
-          onPress={() => handleLogin(username)}>
+          onPress={() => handleLogin(username, password)}>
           <Text style={styles.btnTxt}>Login</Text>
         </TouchableOpacity>
       </View>
@@ -78,7 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
   },
-  mainSectionView: {justifyContent: 'center', alignItems: 'center'},
+  mainSectionView: { justifyContent: 'center', alignItems: 'center' },
   brandView: {
     height: 210,
     width: 277,

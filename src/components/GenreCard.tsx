@@ -1,10 +1,9 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type genreCardParameters = {
   name: string;
-  image: string;
-  icon: string;
+  navigation: any,
 };
 
 const images = {
@@ -38,21 +37,31 @@ type ImageKeys = keyof typeof images;
 export default function GenreCard(
   params: genreCardParameters,
 ): React.JSX.Element {
+
+  const navigation = params.navigation;
   return (
-    <View style={styles.genreContainer}>
+    <TouchableOpacity
+      style={styles.genreContainer}
+      onPress={async () => {
+        navigation.navigate('GENRE', {
+          searchVal: params.name
+        });
+      }}
+    >
       <Image
         style={styles.genreImg}
-        source={images[params.image as ImageKeys]}
+        source={images[params.name as ImageKeys]}
       />
 
       <View style={styles.labelContainer}>
-        <Text style={styles.genreName}>{params.name}</Text>
+        <Text style={styles.genreName}>{params.name.toUpperCase()}</Text>
         <Image
           style={styles.genreIcon}
-          source={icons[params.image as ImageKeys]}
+          source={icons[params.name as ImageKeys]}
+          alt='genre image'
         />
       </View>
-    </View>
+    </TouchableOpacity >
   );
 }
 
@@ -61,7 +70,7 @@ const styles = StyleSheet.create({
     height: 180,
     width: 180,
     backgroundColor: '#ffffff',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowColor: '#000',
     shadowRadius: 10,

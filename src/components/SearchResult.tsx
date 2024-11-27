@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, View, Image, Text} from 'react-native';
-import {TrackObject} from '../utils/utility';
+import { StyleSheet, View, Image, Text } from 'react-native';
+import { TrackObject } from '../utils/utility';
 
 export default function SearchResult({
   track,
@@ -13,8 +13,8 @@ export default function SearchResult({
         style={styles.searchImg}
         source={
           track.artwork
-            ? {uri: track.artwork}
-            : {uri: 'https://via.placeholder.com/150'}
+            ? { uri: track.artwork }
+            : { uri: 'https://via.placeholder.com/150' }
         }
         alt="Track Art"
       />
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   searchResult: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: 430,
+    width: '100%',
     height: 80,
     padding: 10,
   },

@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import TrackPlayer, {RepeatMode} from 'react-native-track-player';
+import React, { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import Login from './screens/Login';
 import DrawerNav from './navigation/DrawerNav';
+import MainLayout from './layouts/MainLayout';
 
 function Main(): React.JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,15 +32,19 @@ function Main(): React.JSX.Element {
     playerSetup();
   }, [isInitialized]);
 
-  return !isLoggedIn ? (
-    <Login handleLogin={handleLogin} />
-  ) : (
-    <NavigationContainer>
-      <DrawerNav
-        username={username}
-        logout={handleLogout}
-      />
-    </NavigationContainer>
+  return (
+    <MainLayout>
+      {!isLoggedIn ? (
+        <Login handleLogin={handleLogin} />
+      ) : (
+        <NavigationContainer>
+          <DrawerNav
+            username={username}
+            logout={handleLogout}
+          />
+        </NavigationContainer>
+      )}
+    </MainLayout>
   );
 }
 

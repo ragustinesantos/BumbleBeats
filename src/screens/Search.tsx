@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   ScrollView,
@@ -9,10 +9,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import GenreCard from '../components/GenreCard';
-import {defaultTrack, TrackObject} from '../utils/utility';
+import { defaultTrack, TrackObject } from '../utils/utility';
 import TrackPlayer from 'react-native-track-player';
 import SearchResult from '../components/SearchResult';
-import {FlatList} from 'react-native-gesture-handler';
+import { FlatList } from 'react-native-gesture-handler';
 
 export default function Search({
   navigation,
@@ -66,7 +66,7 @@ export default function Search({
         }
 
         setSearchResults(resultData);
-      } catch (error) {}
+      } catch (error) { }
     };
 
     if (searchVal.length > 0) {
@@ -78,13 +78,15 @@ export default function Search({
     <FlatList
       data={searchResults}
       keyExtractor={track => track.id.toString()}
-      renderItem={({item}) => {
+      renderItem={({ item }) => {
         return (
           <TouchableOpacity
             style={styles.searchResult}
             onPress={async () => {
               await enqueue([item]);
-              navigation.navigate('Playing', {item, source: 'Search'});
+              navigation.navigate('Playing', { item, source: 'Search' });
+              // TODO: Decide whether to using 'Playing' from tab navigator or 'PLAYING' from stack navigator
+              setSearchVal("");
             }}>
             <SearchResult track={item} />
           </TouchableOpacity>
@@ -117,24 +119,24 @@ export default function Search({
 
       <ScrollView>
         <View style={styles.horizontalView}>
-          <GenreCard name="JAZZ" icon="" image="jazz" />
-          <GenreCard name="HITS" icon="" image="hits" />
+          <GenreCard name="jazz" navigation={navigation} />
+          <GenreCard name="hits" navigation={navigation} />
         </View>
         <View style={styles.horizontalView}>
-          <GenreCard name="ROCK" icon="" image="rock" />
-          <GenreCard name="CLASSICAL" icon="" image="classical" />
+          <GenreCard name="rock" navigation={navigation} />
+          <GenreCard name="classical" navigation={navigation} />
         </View>
         <View style={styles.horizontalView}>
-          <GenreCard name="PLAYLISTS" icon="" image="playlists" />
-          <GenreCard name="POP" icon="" image="pop" />
+          <GenreCard name="playlists" navigation={navigation} />
+          <GenreCard name="pop" navigation={navigation} />
         </View>
         <View style={styles.horizontalView}>
-          <GenreCard name="BLUES" icon="" image="blues" />
-          <GenreCard name="HIP HOP" icon="" image="hiphop" />
+          <GenreCard name="blues" navigation={navigation} />
+          <GenreCard name="hiphop" navigation={navigation} />
         </View>
         <View style={styles.horizontalView}>
-          <GenreCard name="K-POP" icon="" image="kpop" />
-          <GenreCard name="RADIO" icon="" image="radio" />
+          <GenreCard name="kpop" navigation={navigation} />
+          <GenreCard name="radio" navigation={navigation} />
         </View>
       </ScrollView>
     </View>
@@ -182,7 +184,7 @@ const styles = StyleSheet.create({
     left: 20,
     position: 'absolute',
     zIndex: 10,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowColor: '#000',
     shadowRadius: 10,

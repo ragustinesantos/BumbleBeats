@@ -11,15 +11,14 @@ import {
 export default function Login({
   handleLogin,
 }: {
-  handleLogin: (user: string, pass: string, errors: (text: string) => void) => void;
+  handleLogin: (user: string, pass: string, errors: (hasError: boolean) => void) => void;
 }): React.JSX.Element {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState('');
+  const [errors, setErrors] = useState(false);
 
   const handleUsername = (text: string) => setUsername(text);
   const handlePassword = (text: string) => setPassword(text);
-  const handleErrors = (text: string) => setErrors(text);
 
   // const { createUserWithEmail } = useUserAuth() || {};
 
@@ -62,11 +61,13 @@ export default function Login({
               secureTextEntry={true}
             />
           </View>
-          <Text style={styles.errorTxt}>{errors}</Text>
+          <Text style={styles.errorTxt}>
+            {errors && 'Sorry, we could not find your account.'}
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.btnStyle}
-          onPress={() => handleLogin(username, password, handleErrors)}>
+          onPress={() => handleLogin(username, password, setErrors)}>
           <Text style={styles.btnTxt}>Login</Text>
         </TouchableOpacity>
       </View>

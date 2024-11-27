@@ -1,23 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import TrackPlayer, { RepeatMode } from 'react-native-track-player';
+/* eslint-disable @typescript-eslint/no-shadow */
+import React, {useState, useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import TrackPlayer, {RepeatMode} from 'react-native-track-player';
 import Login from './screens/Login';
 import DrawerNav from './navigation/DrawerNav';
-import MainLayout from './layouts/MainLayout';
+import {useUserAuth} from './_utils/auth-context';
 
 function Main(): React.JSX.Element {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
+  const [drawerUsername, setDrawerUsername] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const handleLogin = (user: string) => {
-    setIsLoggedIn(true);
-    setUsername(user);
+  const {user, signInWithEmail, firebaseSignOut} = useUserAuth() || {};
+
+  const handleLogin = async (
+    username: string,
+    pass: string,
+    err: (hasError: boolean) => void,
+  ) => {
+    if (signInWithEmail) {
+      try {
+        await signInWithEmail(username, pass, err);
+        console.log(user);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
-  const handleLogout = () => {
-    setUsername('');
-    setIsLoggedIn(false);
+  const handleDrawerUsername = (inputTxt: string) => {
+    setDrawerUsername(inputTxt);
+    console.log(drawerUsername);
+  };
+
+  const handleLogout = async () => {
+    if (firebaseSignOut) {
+      await firebaseSignOut();
+    }
   };
 
   // On load, set up player
@@ -32,19 +50,15 @@ function Main(): React.JSX.Element {
     playerSetup();
   }, [isInitialized]);
 
-  return (
-    <MainLayout>
-      {!isLoggedIn ? (
-        <Login handleLogin={handleLogin} />
-      ) : (
-        <NavigationContainer>
-          <DrawerNav
-            username={username}
-            logout={handleLogout}
-          />
-        </NavigationContainer>
-      )}
-    </MainLayout>
+  return !user ? (
+    <Login
+      handleLogin={handleLogin}
+      handleDrawerUsername={handleDrawerUsername}
+    />
+  ) : (
+    <NavigationContainer>
+      <DrawerNav username={drawerUsername} logout={handleLogout} />
+    </NavigationContainer>
   );
 }
 

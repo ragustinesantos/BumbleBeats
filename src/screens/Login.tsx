@@ -10,16 +10,33 @@ import {
 
 export default function Login({
   handleLogin,
+  handleDrawerUsername,
 }: {
-  handleLogin: (user: string) => void;
+  handleLogin: (
+    user: string,
+    pass: string,
+    errors: (hasError: boolean) => void,
+  ) => void;
+  handleDrawerUsername: (inputTxt: string) => void;
 }): React.JSX.Element {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState(false);
 
-  const handleUsername = (text: string) => setUsername(text);
+  const handleUsername = (text: string) => {
+    setUsername(text);
+    handleDrawerUsername(text);
+  };
   const handlePassword = (text: string) => setPassword(text);
 
-  const handleCreateAccount = () => {
+  // const { createUserWithEmail } = useUserAuth() || {};
+
+  const handleCreateAccount = async () => {
+    // TESTING CODE only while create account feature is ongoing
+    // const newEmail = 'emailname@gmail.com'
+    // const newPass = 'Testing1234'
+    // if (createUserWithEmail)
+    //   createUserWithEmail(newEmail, newPass);
     console.log('Create Account');
   };
 
@@ -53,10 +70,13 @@ export default function Login({
               secureTextEntry={true}
             />
           </View>
+          <Text style={styles.errorTxt}>
+            {errors && 'Sorry, we could not find your account.'}
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.btnStyle}
-          onPress={() => handleLogin(username)}>
+          onPress={() => handleLogin(username, password, setErrors)}>
           <Text style={styles.btnTxt}>Login</Text>
         </TouchableOpacity>
       </View>
@@ -135,5 +155,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textDecorationLine: 'underline',
     color: '#E9A941',
+  },
+  errorTxt: {
+    color: '#f2545b',
   },
 });

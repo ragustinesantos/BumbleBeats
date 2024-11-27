@@ -11,11 +11,11 @@ function Main(): React.JSX.Element {
 
   const { user, signInWithEmail, firebaseSignOut } = useUserAuth() || {};
 
-  const handleLogin = async (username: string, pass: string) => {
+  const handleLogin = async (username: string, pass: string, errMsg: (text: string) => void) => {
 
     if (signInWithEmail) {
       try {
-        await signInWithEmail(username, pass)
+        await signInWithEmail(username, pass, errMsg);
         console.log(user);
       } catch (error) {
         console.log(error);

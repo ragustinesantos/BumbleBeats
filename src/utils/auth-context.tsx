@@ -13,7 +13,7 @@ import { auth } from "./firebase";
 interface AuthContextType {
     user: User | null;
     createUserWithEmail: (email: string, password: string) => Promise<boolean>;
-    signInWithEmail: (email: string, password: string) => Promise<boolean>;
+    signInWithEmail: (email: string, password: string, errMsg: (text: string) => void) => Promise<boolean>;
     firebaseSignOut: () => Promise<void>;
 }
 
@@ -44,11 +44,12 @@ export const AuthContextProvider = ({
     }
 
 
-    const signInWithEmail = async (email: string, password: string): Promise<boolean> => {
+    const signInWithEmail = async (email: string, password: string, errMsg: (text: string) => void): Promise<boolean> => {
         await signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in 
                 setUser(userCredential.user);
+                errMsg('');
                 return true;
             })
             .catch((error) => {
@@ -56,6 +57,7 @@ export const AuthContextProvider = ({
                 const errorMessage = error.message;
                 console.log(errorCode);
                 console.log(errorMessage);
+                errMsg(errorMessage);
                 return false;
             });
         return false;

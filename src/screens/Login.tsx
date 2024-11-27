@@ -11,13 +11,15 @@ import {
 export default function Login({
   handleLogin,
 }: {
-  handleLogin: (user: string, pass: string) => void;
+  handleLogin: (user: string, pass: string, errors: (text: string) => void) => void;
 }): React.JSX.Element {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState('');
 
   const handleUsername = (text: string) => setUsername(text);
   const handlePassword = (text: string) => setPassword(text);
+  const handleErrors = (text: string) => setErrors(text);
 
   // const { createUserWithEmail } = useUserAuth() || {};
 
@@ -60,10 +62,11 @@ export default function Login({
               secureTextEntry={true}
             />
           </View>
+          <Text style={styles.errorTxt}>{errors}</Text>
         </View>
         <TouchableOpacity
           style={styles.btnStyle}
-          onPress={() => handleLogin(username, password)}>
+          onPress={() => handleLogin(username, password, handleErrors)}>
           <Text style={styles.btnTxt}>Login</Text>
         </TouchableOpacity>
       </View>
@@ -143,4 +146,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     color: '#E9A941',
   },
+  errorTxt: {
+    color: '#f2545b'
+  }
 });

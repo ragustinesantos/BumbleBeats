@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeStackNav from '../navigation/HomeStackNav';
 import PlaylistStackNav from '../navigation/PlaylistStackNav';
 import SearchStackNav from '../navigation/SearchStackNav';
@@ -12,7 +12,7 @@ const AppNav = createBottomTabNavigator();
 export default function TabNav(): React.JSX.Element {
   return (
     <AppNav.Navigator
-      screenOptions={({route}) => ({
+      screenOptions={({ route }) => ({
         tabBarIcon: ({
           focused,
           color,
@@ -33,7 +33,7 @@ export default function TabNav(): React.JSX.Element {
         },
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarStyle: {backgroundColor: '#222A2C'},
+        tabBarStyle: { backgroundColor: '#222A2C', height: 70 },
       })}
       initialRouteName="Home">
       <AppNav.Screen
@@ -44,7 +44,7 @@ export default function TabNav(): React.JSX.Element {
       <AppNav.Screen
         name="Playing"
         component={Playing}
-        initialParams={{source: 'Tab'}}
+        initialParams={{ source: 'Tab' }}
       />
       <AppNav.Screen
         name="Search"

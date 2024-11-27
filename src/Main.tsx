@@ -7,7 +7,7 @@ import DrawerNav from './navigation/DrawerNav';
 import {useUserAuth} from './_utils/auth-context';
 
 function Main(): React.JSX.Element {
-  const [username, setUsername] = useState('');
+  const [drawerUsername, setDrawerUsername] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
 
   const {user, signInWithEmail, firebaseSignOut} = useUserAuth() || {};
@@ -25,6 +25,11 @@ function Main(): React.JSX.Element {
         console.log(error);
       }
     }
+  };
+
+  const handleDrawerUsername = (inputTxt: string) => {
+    setDrawerUsername(inputTxt);
+    console.log(drawerUsername);
   };
 
   const handleLogout = async () => {
@@ -46,10 +51,13 @@ function Main(): React.JSX.Element {
   }, [isInitialized]);
 
   return !user ? (
-    <Login handleLogin={handleLogin} />
+    <Login
+      handleLogin={handleLogin}
+      handleDrawerUsername={handleDrawerUsername}
+    />
   ) : (
     <NavigationContainer>
-      <DrawerNav username={username} logout={handleLogout} />
+      <DrawerNav username={drawerUsername} logout={handleLogout} />
     </NavigationContainer>
   );
 }

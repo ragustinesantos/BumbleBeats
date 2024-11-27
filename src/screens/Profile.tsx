@@ -9,25 +9,7 @@ import {
 } from 'react-native';
 import SongCard from '../components/SongCard';
 import SongListCard from '../components/SongListCard';
-
-
-type Song = {
-  id: string;
-  title: string;
-  artist: string;
-  artwork: string;
-};
-
-// Fake data for liked songs -- testing
-const likedSongs: Song[] = [
-  {
-    id: '1',
-    title: 'Song Title',
-    artist: 'Artist',
-    artwork: '',
-  },
-
-];
+import { likedSongs } from '../utils/utility';
 
 export default function Profile(): React.JSX.Element {
 
@@ -59,7 +41,7 @@ export default function Profile(): React.JSX.Element {
             artist={item.artist}
           />
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={style.songList}
       />
     </View>
@@ -69,7 +51,7 @@ export default function Profile(): React.JSX.Element {
 const style = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     paddingHorizontal: 20,
     paddingTop: 20,
   },
@@ -89,7 +71,7 @@ const style = StyleSheet.create({
   userName: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#000',
+    color: 'black',
     marginBottom: 10,
   },
 
@@ -101,7 +83,7 @@ const style = StyleSheet.create({
 
   statTxt: {
     fontSize: 14,
-    color: '#000',
+    color: 'black',
     textAlign: 'center',
   },
 

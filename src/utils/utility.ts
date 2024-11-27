@@ -25,6 +25,22 @@ export const defaultPlaylist: PlaylistObject = {
       album: 'Album',
       artwork: 'https://via.placeholder.com/150',
     },
+    {
+      id: 2,
+      title: 'Song 2',
+      url: 'https://example.com/song2.mp3',
+      artist: 'Artist',
+      album: 'Album',
+      artwork: 'https://via.placeholder.com/150',
+    },
+    {
+      id: 3,
+      title: 'Song 3',
+      url: 'https://example.com/song3.mp3',
+      artist: 'Artist',
+      album: 'Album',
+      artwork: 'https://via.placeholder.com/150',
+    },
   ],
 };
 
@@ -48,3 +64,30 @@ export const defaultPlayingObject = {
   artist: '',
   artwork: '',
 };
+
+export const likedSongs: TrackObject[] = [
+  {
+    id: 1,
+    title: 'Song 1',
+    url: 'https://example.com/song1.mp3',
+    artist: 'Artist 1',
+    album: 'Album 1',
+    artwork: 'https://via.placeholder.com/150',
+  },
+  {
+    id: 2,
+    title: 'Song 2',
+    url: 'https://example.com/song2.mp3',
+    artist: 'Artist 2',
+    album: 'Album 2',
+    artwork: 'https://via.placeholder.com/150',
+  },
+  {
+    id: 3,
+    title: 'Song 3',
+    url: 'https://example.com/song3.mp3',
+    artist: 'Artist 3',
+    album: 'Album 3',
+    artwork: 'https://via.placeholder.com/150',
+  },
+];

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import ProgressBar from '../components/ProgressBar';
 import {defaultPlayingObject, PlayingObject} from '../utils/utility';
 import {useFocusEffect} from '@react-navigation/native';
@@ -18,6 +18,10 @@ export default function Playing({
   const [track, setTrack] = useState<PlayingObject>({...defaultPlayingObject});
 
   const [playing, setPlaying] = useState(false);
+
+  const [isLooping, setIsLooping] = useState(false);
+
+  const [likedSongs, setLikedSongs] = useState<PlayingObject[]>([]);
 
   useEffect(() => {
     if (source === 'Home') {
@@ -71,7 +75,22 @@ export default function Playing({
     await TrackPlayer.skipToPrevious();
   };
 
-  // Need to add liking and looping functionality
+  // Looping songs using RepeatMode
+  const toggleLoop = async () => {
+    const currentRepeatMode = await TrackPlayer.getRepeatMode();
+    if (currentRepeatMode === RepeatMode.Track) {
+      await TrackPlayer.setRepeatMode(RepeatMode.Off);
+      setIsLooping(false);
+    } else {
+      await TrackPlayer.setRepeatMode(RepeatMode.Track);
+      setIsLooping(true);
+    }
+  };
+
+  const handleLikeSong = () => {
+    setLikedSongs((prevLikedSongs) => [...prevLikedSongs, track]);
+    console.log('Song liked:', track);
+  };
 
   return (
     <View style={style.container}>
@@ -93,12 +112,17 @@ export default function Playing({
 
       <View style={style.controls}>
         <TouchableOpacity
-          onPress={() => console.log('Looped')}
+          onPress={toggleLoop}
           style={style.controlBtn}>
-          <Image
-            source={require('../assets/nav-icons/shuffle-angular.png')}
-            style={style.extraControlIcon}
-          />
+            <View style={style.loopContainer}>
+              <Image
+                source={require('../assets/nav-icons/repeat.png')}
+                style={style.extraControlIcon}
+              />
+              <View>
+                {isLooping && <View style={style.loopIndicator} />}
+              </View>
+            </View>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={skipToPrevious} style={style.controlBtn}>
@@ -127,7 +151,7 @@ export default function Playing({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => console.log('Loved')}
+          onPress={handleLikeSong}
           style={style.controlBtn}>
           <Image
             source={require('../assets/nav-icons/heart.png')}
@@ -203,4 +227,18 @@ const style = StyleSheet.create({
     width: 30,
     height: 30,
   },
+
+  loopContainer:{
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+  },
+
+  loopIndicator: {
+    width: 3,
+    height: 3,
+    borderRadius: 4,
+    backgroundColor: "#E9A941",
+    alignSelf: 'center',
+  }
 });

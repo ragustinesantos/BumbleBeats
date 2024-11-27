@@ -1,5 +1,5 @@
 import React from 'react';
-import { AuthContextProvider } from '../utils/auth-context';
+import { AuthContextProvider } from '../_utils/auth-context';
 import Main from '../Main';
 
 

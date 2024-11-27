@@ -1,11 +1,12 @@
-import React, { ReactNode } from 'react';
-import { AuthContextProvider } from '../utils/auth-context';
+import React from 'react';
+import { AuthContextProvider } from '../_utils/auth-context';
+import Main from '../Main';
 
 
-const MainLayout = ({ children }: { children: ReactNode }) => {
+const MainLayout = () => {
     return (
         <AuthContextProvider>
-            {children}
+            <Main />
         </AuthContextProvider>
     );
 };

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   TextInput,
@@ -12,11 +12,7 @@ export default function Login({
   handleLogin,
   handleDrawerUsername,
 }: {
-  handleLogin: (
-    user: string,
-    pass: string,
-    errors: (hasError: boolean) => void,
-  ) => void;
+  handleLogin: (user: string, pass: string, errors: (hasError: boolean) => void) => void;
   handleDrawerUsername: (inputTxt: string) => void;
 }): React.JSX.Element {
   const [username, setUsername] = useState('');
@@ -98,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
   },
-  mainSectionView: {justifyContent: 'center', alignItems: 'center'},
+  mainSectionView: { justifyContent: 'center', alignItems: 'center' },
   brandView: {
     height: 210,
     width: 277,

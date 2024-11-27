@@ -1,4 +1,4 @@
-import bcryptjs from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
 export interface TrackObject {
   id: number;
@@ -80,7 +80,7 @@ export async function hashPassword(password: string) {
   try {
     const hashRounds = 10;
 
-    const hashedPassword = await bcryptjs.hash(password, hashRounds);
+    const hashedPassword = bcrypt.hashSync(password, hashRounds);
 
     return hashedPassword;
   } catch (error) {
@@ -92,7 +92,7 @@ export async function hashPassword(password: string) {
 // returns true or false
 export async function verifyPassword(passwordInput: string, hashedPassword: string) {
   try {
-    const isVerified = await bcryptjs.compare(passwordInput, hashedPassword);
+    const isVerified = bcrypt.compareSync(passwordInput, hashedPassword);
 
     return isVerified;
   } catch (error) {

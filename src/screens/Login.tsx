@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   TextInput,
@@ -10,14 +10,23 @@ import {
 
 export default function Login({
   handleLogin,
+  handleDrawerUsername,
 }: {
-  handleLogin: (user: string, pass: string, errors: (hasError: boolean) => void) => void;
+  handleLogin: (
+    user: string,
+    pass: string,
+    errors: (hasError: boolean) => void,
+  ) => void;
+  handleDrawerUsername: (inputTxt: string) => void;
 }): React.JSX.Element {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState(false);
 
-  const handleUsername = (text: string) => setUsername(text);
+  const handleUsername = (text: string) => {
+    setUsername(text);
+    handleDrawerUsername(text);
+  };
   const handlePassword = (text: string) => setPassword(text);
 
   // const { createUserWithEmail } = useUserAuth() || {};
@@ -89,7 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
   },
-  mainSectionView: { justifyContent: 'center', alignItems: 'center' },
+  mainSectionView: {justifyContent: 'center', alignItems: 'center'},
   brandView: {
     height: 210,
     width: 277,
@@ -148,6 +157,6 @@ const styles = StyleSheet.create({
     color: '#E9A941',
   },
   errorTxt: {
-    color: '#f2545b'
-  }
+    color: '#f2545b',
+  },
 });

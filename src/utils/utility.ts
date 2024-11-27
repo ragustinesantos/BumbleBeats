@@ -43,8 +43,32 @@ export interface PlayingObject {
   artwork: string | undefined;
 }
 
-export const defaultPlayingObject = {
+export const defaultPlayingObject: PlayingObject = {
   title: '',
   artist: '',
   artwork: '',
+};
+
+export interface User {
+  id: string;
+  email: string;
+  password: string;
+  playlists: PlaylistObject[];
+  recentlyPlayed: TrackObject[];
+}
+
+export interface UserToEdit {
+  email: string;
+  password: string;
+  playlists: PlaylistObject[];
+  recentlyPlayed: TrackObject[];
+  [key: string]: any;
+}
+
+export const defaultUser: User = {
+  id: '',
+  email: '',
+  password: '',
+  playlists: [],
+  recentlyPlayed: [],
 };

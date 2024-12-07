@@ -48,7 +48,7 @@ function Main(): React.JSX.Element {
 
   return (
     !user ? (
-      <Login handleLogin={handleLogin} />
+      <Login handleLogin={handleLogin} handleDrawerUsername={handleDrawerUsername}/>
     ) : (
       <NavigationContainer>
         <DrawerNav

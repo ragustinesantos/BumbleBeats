@@ -16,18 +16,9 @@ export interface PlaylistObject {
 }
 
 export const defaultPlaylist: PlaylistObject = {
-  playlistName: 'Bees',
-  numOfSongs: 1,
-  tracks: [
-    {
-      id: 1,
-      title: 'Song 1',
-      url: 'https://example.com/song1.mp3',
-      artist: 'Artist',
-      album: 'Album',
-      artwork: 'https://via.placeholder.com/150',
-    },
-  ],
+  playlistName: '',
+  numOfSongs: 0,
+  tracks: [],
 };
 
 export const defaultTrack: TrackObject = {
@@ -90,7 +81,10 @@ export async function hashPassword(password: string) {
 
 // Verifies if provided password matches with hashed password
 // returns true or false
-export async function verifyPassword(passwordInput: string, hashedPassword: string) {
+export async function verifyPassword(
+  passwordInput: string,
+  hashedPassword: string,
+) {
   try {
     const isVerified = bcrypt.compareSync(passwordInput, hashedPassword);
 

@@ -4,6 +4,7 @@ import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import Login from './screens/Login';
 import DrawerNav from './navigation/DrawerNav';
 import { useUserAuth } from './_utils/auth-context';
+import TabNav from './navigation/TabNav';
 
 function Main(): React.JSX.Element {
   const [drawerUsername, setDrawerUsername] = useState('');
@@ -25,7 +26,6 @@ function Main(): React.JSX.Element {
 
   const handleDrawerUsername = (inputTxt: string) => {
     setDrawerUsername(inputTxt);
-    console.log(drawerUsername);
   };
 
   const handleLogout = async () => {
@@ -48,7 +48,7 @@ function Main(): React.JSX.Element {
 
   return (
     !user ? (
-      <Login handleLogin={handleLogin} />
+      <Login handleLogin={handleLogin} handleDrawerUsername={handleDrawerUsername}/>
     ) : (
       <NavigationContainer>
         <DrawerNav

@@ -16,34 +16,9 @@ export interface PlaylistObject {
 }
 
 export const defaultPlaylist: PlaylistObject = {
-  playlistName: 'Bees',
-  numOfSongs: 1,
-  tracks: [
-    {
-      id: 1,
-      title: 'Song 1',
-      url: 'https://example.com/song1.mp3',
-      artist: 'Artist',
-      album: 'Album',
-      artwork: 'https://via.placeholder.com/150',
-    },
-    {
-      id: 2,
-      title: 'Song 2',
-      url: 'https://example.com/song2.mp3',
-      artist: 'Artist',
-      album: 'Album',
-      artwork: 'https://via.placeholder.com/150',
-    },
-    {
-      id: 3,
-      title: 'Song 3',
-      url: 'https://example.com/song3.mp3',
-      artist: 'Artist',
-      album: 'Album',
-      artwork: 'https://via.placeholder.com/150',
-    },
-  ],
+  playlistName: '',
+  numOfSongs: 0,
+  tracks: [],
 };
 
 export const defaultTrack: TrackObject = {
@@ -66,33 +41,6 @@ export const defaultPlayingObject: PlayingObject = {
   artist: '',
   artwork: '',
 };
-
-export const likedSongs: TrackObject[] = [
-  {
-    id: 1,
-    title: 'Song 1',
-    url: 'https://example.com/song1.mp3',
-    artist: 'Artist 1',
-    album: 'Album 1',
-    artwork: 'https://via.placeholder.com/150',
-  },
-  {
-    id: 2,
-    title: 'Song 2',
-    url: 'https://example.com/song2.mp3',
-    artist: 'Artist 2',
-    album: 'Album 2',
-    artwork: 'https://via.placeholder.com/150',
-  },
-  {
-    id: 3,
-    title: 'Song 3',
-    url: 'https://example.com/song3.mp3',
-    artist: 'Artist 3',
-    album: 'Album 3',
-    artwork: 'https://via.placeholder.com/150',
-  },
-];
 
 export interface User {
   id: string;
@@ -133,7 +81,10 @@ export async function hashPassword(password: string) {
 
 // Verifies if provided password matches with hashed password
 // returns true or false
-export async function verifyPassword(passwordInput: string, hashedPassword: string) {
+export async function verifyPassword(
+  passwordInput: string,
+  hashedPassword: string,
+) {
   try {
     const isVerified = bcrypt.compareSync(passwordInput, hashedPassword);
 

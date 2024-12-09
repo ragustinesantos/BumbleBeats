@@ -24,6 +24,7 @@ export async function dbGetAllUsers() {
       };
       UserList.push(User);
     });
+
     return UserList;
   } catch (error) {
     return console.log(error);
@@ -50,9 +51,15 @@ export async function dbGetUser(userId: string) {
       return null;
     }
 
-    console.log('User successfully retrieved');
+    const retrievedUserObject = {
+      id: documentSnapshot.id,
+      email: documentSnapshot.data().email,
+      password: documentSnapshot.data().password,
+      playlists: documentSnapshot.data().playlists,
+      recentlyPlayed: documentSnapshot.data().recentlyPlayed,
+    };
 
-    return documentSnapshot.data();
+    return retrievedUserObject;
   } catch (error) {
     return console.log(`Error retrieving user: ${error}`);
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   TextInput,
@@ -7,22 +7,43 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
+import Snackbar from 'react-native-snackbar';
 
 export default function Login({
   handleLogin,
   handleDrawerUsername,
 }: {
-  handleLogin: (user: string, pass: string, errors: (hasError: boolean) => void) => void;
+  handleLogin: (
+    user: string,
+    pass: string,
+    errors: (hasError: boolean) => void,
+  ) => void;
   handleDrawerUsername: (inputTxt: string) => void;
 }): React.JSX.Element {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState(false);
 
+  const snackError = () => {
+    return Snackbar.show({
+      text: 'Sign in failed. Check your credentials and try again.',
+      backgroundColor: '#a81818',
+      textColor: '#FFF',
+    });
+  };
+
+  useEffect(() => {
+    if (errors) {
+      snackError();
+      setErrors(false);
+    }
+  }, [errors]);
+
   const handleUsername = (text: string) => {
     setUsername(text);
     handleDrawerUsername(text);
   };
+
   const handlePassword = (text: string) => setPassword(text);
 
   // const { createUserWithEmail } = useUserAuth() || {};
@@ -66,9 +87,6 @@ export default function Login({
               secureTextEntry={true}
             />
           </View>
-          <Text style={styles.errorTxt}>
-            {errors && 'Sorry, we could not find your account.'}
-          </Text>
         </View>
         <TouchableOpacity
           style={styles.btnStyle}
@@ -94,7 +112,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
   },
-  mainSectionView: { justifyContent: 'center', alignItems: 'center' },
+  mainSectionView: {justifyContent: 'center', alignItems: 'center'},
   brandView: {
     height: 210,
     width: 277,

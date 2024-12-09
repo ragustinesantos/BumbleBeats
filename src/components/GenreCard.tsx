@@ -61,7 +61,7 @@ export default function GenreCard(
           alt='genre image'
         />
       </View>
-    </TouchableOpacity >
+    </TouchableOpacity>
   );
 }
 

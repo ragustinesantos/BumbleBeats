@@ -4,7 +4,6 @@ import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import Login from './screens/Login';
 import DrawerNav from './navigation/DrawerNav';
 import { useUserAuth } from './_utils/auth-context';
-import TabNav from './navigation/TabNav';
 
 function Main(): React.JSX.Element {
   const [drawerUsername, setDrawerUsername] = useState('');

@@ -6,26 +6,36 @@ import TrackPlayer, {useProgress} from 'react-native-track-player';
 export default function ProgressBar(): React.JSX.Element {
   const {position, duration} = useProgress();
 
+  const roundedPosition = Math.floor(position);
+  const roundedDuration = Math.floor(duration);
+
+const formattedDuration = roundedDuration && !isNaN(roundedDuration) ? formatTime(roundedDuration) : '00:00';
+
   return (
     <View style={styles.container}>
       <Slider
-        value={position}
+        value={roundedPosition}
         minimumValue={0}
-        maximumValue={duration}
+        maximumValue={roundedDuration}
         onValueChange={value => TrackPlayer.seekTo(value)}
         thumbTintColor="#E9A941"
       />
       <View style={styles.timeContainer}>
-        <Text style={styles.timeTxt}>{formatTime(position)}</Text>
-        <Text style={styles.timeTxt}>{formatTime(duration)}</Text>
+        <Text style={styles.timeTxt}>{formatTime(roundedPosition)}</Text>
+        <Text style={styles.timeTxt}>{formattedDuration}</Text>
       </View>
     </View>
   );
 }
 
 // Time format
-const formatTime = (seconds: number) =>
-  `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
+const formatTime = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const paddedMinutes = minutes.toString().padStart(2, '0');
+  const paddedSeconds = (seconds % 60).toString().padStart(2, '0');
+
+  return `${paddedMinutes}:${paddedSeconds}`;
+};
 
 const styles = StyleSheet.create({
   container: {

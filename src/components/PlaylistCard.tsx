@@ -16,7 +16,14 @@ export default function PlaylistCard(
 
   return (
     <View style={style.cardContainer}>
-      <Image style={style.image} source={{uri: artwork}} />
+      <Image
+        style={style.image}
+        source={
+          artwork
+            ? {uri: artwork}
+            : require('../assets/playlist/default-art.png')
+        }
+      />
       <View style={style.txtContainer}>
         <Text style={style.playlistName}>{playlistName}</Text>
         <Text style={style.numOfSongs}>{numOfSongs} Songs</Text>

@@ -29,7 +29,7 @@ export default function CreatePlaylist({
   navigation: any;
   route: any;
 }): React.JSX.Element {
-  const {user} = route.params;
+  const {user, playlistList} = route.params;
 
   const [searchVal, setSearchVal] = useState('');
   const [searchResults, setSearchResults] = useState<TrackObject[]>([
@@ -44,7 +44,7 @@ export default function CreatePlaylist({
 
   const snackError = () => {
     return Snackbar.show({
-      text: 'Please provide a playlist name and at least 1 song.',
+      text: 'Please provide a unique playlist name and at least 1 song.',
       backgroundColor: '#a81818',
       textColor: '#FFF',
     });
@@ -52,7 +52,14 @@ export default function CreatePlaylist({
 
   const savePlaylist = async () => {
     try {
-      if (tempPlaylist.playlistName && tempPlaylist.tracks) {
+      if (
+        tempPlaylist.playlistName &&
+        tempPlaylist.tracks &&
+        !playlistList.some(
+          (playlist: any) =>
+            playlist.playlistName === tempPlaylist.playlistName,
+        )
+      ) {
         await dbUpdateUser(user.id, {
           playlists: [...user.playlists, tempPlaylist],
         });
@@ -171,15 +178,33 @@ export default function CreatePlaylist({
       keyExtractor={track => track.id.toString()}
       renderItem={({item}) => {
         return (
-          <TouchableOpacity
-            style={styles.playlistResult}
-            onPress={async () => {
-              await enqueue([item]);
-              navigation.navigate('PLAYING', {item, source: 'Create Playlist'});
-              setSearchVal('');
-            }}>
-            <SearchResult track={item} />
-          </TouchableOpacity>
+          <View>
+            <TouchableOpacity
+              style={styles.playlistResult}
+              onPress={async () => {
+                await enqueue([item]);
+                navigation.navigate('PLAYING', {
+                  item,
+                  source: 'Create Playlist',
+                });
+                setSearchVal('');
+              }}>
+              <SearchResult track={item} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => {
+                const updatedTempPlaylist = {
+                  ...tempPlaylist,
+                  tracks: tempPlaylist.tracks.filter(
+                    track => track.id !== item.id,
+                  ),
+                };
+                setTempPlaylist(updatedTempPlaylist);
+              }}>
+              <Image source={require('../assets/nav-icons/minus-circle.png')} />
+            </TouchableOpacity>
+          </View>
         );
       }}
     />
@@ -300,6 +325,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 0.5,
     borderColor: '#a7a7a7',
+  },
+
+  deleteButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    tintColor: '#222A2C',
   },
 
   searchImg: {

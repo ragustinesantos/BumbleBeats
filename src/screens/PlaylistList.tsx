@@ -1,11 +1,22 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useCallback, useState} from 'react';
-import {View, TouchableOpacity, Text, StyleSheet, FlatList} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+} from 'react-native';
 import PlaylistCard from '../components/PlaylistCard';
 import {defaultUser, User} from '../utils/utility';
 import {useUserAuth} from '../_utils/auth-context';
-import {dbGetAllUsers, dbGetUser} from '../_services/users-service';
+import {
+  dbGetAllUsers,
+  dbGetUser,
+  dbUpdateUser,
+} from '../_services/users-service';
 import {useFocusEffect} from '@react-navigation/native';
 
 export default function PlaylistList({
@@ -16,6 +27,7 @@ export default function PlaylistList({
   const {user} = useUserAuth() || {};
   const [currentUser, setCurrentUser] = useState<User>({...defaultUser});
   const [playlistList, setPlaylistList] = useState<any>([]);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -41,8 +53,22 @@ export default function PlaylistList({
         }
       };
       retrieveData();
-    }, [navigation, user]),
+    }, [navigation, user, refreshKey]),
   );
+
+  const handleDelete = async (playlistName: string) => {
+    try {
+      const updatedPlaylists = {
+        playlists: playlistList.filter(
+          (playlist: any) => playlist.playlistName !== playlistName,
+        ),
+      };
+      await dbUpdateUser(currentUser.id, updatedPlaylists);
+      console.log('Playlist deleted');
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const mappedPlaylists = (
     <FlatList
@@ -58,14 +84,27 @@ export default function PlaylistList({
       keyExtractor={item => item.tracks[0].id}
       renderItem={({item}) => {
         return (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('PLAYLIST', item)}>
-            <PlaylistCard
-              playlistName={item.playlistName}
-              numOfSongs={item.numOfSongs}
-              artwork={item.tracks[0].artwork}
-            />
-          </TouchableOpacity>
+          <View>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => {
+                handleDelete(item.playlistName);
+                setRefreshKey(prev => prev + 1);
+              }}>
+              <Image
+                source={require('../assets/nav-icons/trash.png')}
+                style={styles.trashIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PLAYLIST', item)}>
+              <PlaylistCard
+                playlistName={item.playlistName}
+                numOfSongs={item.numOfSongs}
+                artwork={item.tracks[0].artwork}
+              />
+            </TouchableOpacity>
+          </View>
         );
       }}
     />
@@ -77,7 +116,10 @@ export default function PlaylistList({
       <TouchableOpacity
         style={styles.fab}
         onPress={() =>
-          navigation.navigate('CREATE PLAYLIST', {user: currentUser})
+          navigation.navigate('CREATE PLAYLIST', {
+            user: currentUser,
+            playlistList: playlistList,
+          })
         }>
         <Text style={styles.btnText}>+</Text>
       </TouchableOpacity>
@@ -89,6 +131,17 @@ const styles = StyleSheet.create({
   pageView: {
     flex: 1,
     padding: 15,
+  },
+  trashIcon: {tintColor: '#222A2C', height: 24, width: 24},
+  deleteButton: {
+    position: 'absolute',
+    zIndex: 50,
+    right: 10,
+    top: 10,
+    borderRadius: 50,
+    backgroundColor: '#F2F2F2',
+    padding: 3,
+    elevation: 4,
   },
   fab: {
     position: 'absolute',

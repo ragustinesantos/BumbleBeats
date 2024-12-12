@@ -11,6 +11,7 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
   const [isShuffling, setIsShuffling] = useState(false);
   const [search, setSearch] = useState('');
   const [foundSongs, setFoundSongs] = useState<TrackObject[]>(tracks);
+  const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<TrackObject | null>(null);
 
   const handleSearch = (entered: string) => {
     setSearch(entered);
@@ -23,14 +24,31 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
   };
 
   const handlePlayPress = async () => {
-    if (isPlaying) {
-      await TrackPlayer.pause();
-    } else {
-      await TrackPlayer.reset();
-      await TrackPlayer.add(tracks);
-      await TrackPlayer.play();
+    try {
+      if (tracks.length === 0) {
+        console.warn('No tracks in the playlist');
+        return;
+      }
+  
+      if (isPlaying) {
+        await TrackPlayer.pause();
+      } else {
+        const trackPlayerTracks = tracks.map((track: TrackObject) => ({
+          id: track.id,
+          url: track.url,
+          title: track.title,
+          artist: track.artist,
+          artwork: track.artwork
+        }));
+  
+        await TrackPlayer.reset();
+        await TrackPlayer.add(trackPlayerTracks);
+        await TrackPlayer.play();
+      }
+      setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Error:', error);
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleShufflePress = async () => {
@@ -41,6 +59,39 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
       if (isPlaying) await TrackPlayer.play();
     }
     setIsShuffling(!isShuffling);
+  };
+
+  const handleSongPress = async (item: TrackObject) => {
+    console.log('Song pressed:', item.title);
+    console.log('Currently playing song:', currentlyPlayingSong?.title);
+
+    try {
+
+      const trackToPlay = {
+        id: item.id.toString(),
+        url: item.url,
+        title: item.title,
+        artist: item.artist,
+        artwork: item.artwork
+      };
+
+      if (currentlyPlayingSong && currentlyPlayingSong.id === item.id) {
+        await TrackPlayer.pause();
+        setCurrentlyPlayingSong(null);
+        return;
+      }
+
+      await TrackPlayer.stop();
+      await TrackPlayer.reset();
+      
+      await TrackPlayer.add(trackToPlay);
+      await TrackPlayer.play();
+
+      setCurrentlyPlayingSong(item);
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return(
@@ -58,8 +109,8 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
       <View style={style.playlistContainer}>
         <Image
           source={
-            tracks.artwork
-              ? {uri: tracks.artwork}
+            tracks.length > 0 && tracks[0].artwork
+              ? {uri: tracks[0].artwork}
               : require('../assets/playlist/default-art.png')
           }
           style={style.playlistArtwork}
@@ -106,6 +157,8 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
             artwork={item.artwork}
             title={item.title}
             artist={item.artist}
+            isPlaying={currentlyPlayingSong?.id === item.id}
+            onPress={() => handleSongPress(item)}
           />
         )}
       />
@@ -227,4 +280,3 @@ const style = StyleSheet.create({
     borderBottomWidth: 1
   },
 })
-

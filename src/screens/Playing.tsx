@@ -3,8 +3,10 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import ProgressBar from '../components/ProgressBar';
-import {defaultPlayingObject, PlayingObject} from '../utils/utility';
+import {defaultPlayingObject, PlayingObject, TrackObject} from '../utils/utility';
 import {useFocusEffect} from '@react-navigation/native';
+import { useUserAuth } from '../_utils/auth-context';
+import { dbGetUser, dbUpdateUser } from '../_services/users-service';
 
 export default function Playing({
   route,
@@ -15,13 +17,15 @@ export default function Playing({
 }): React.JSX.Element {
   const {source} = route.params;
 
+  const { user } = useUserAuth() || {};
+
   const [track, setTrack] = useState<PlayingObject>({...defaultPlayingObject});
 
   const [playing, setPlaying] = useState(false);
 
   const [isLooping, setIsLooping] = useState(false);
 
-  const [likedSongs, setLikedSongs] = useState<PlayingObject[]>([]);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     if (source === 'Home') {
@@ -87,9 +91,45 @@ export default function Playing({
     }
   };
 
-  const handleLikeSong = () => {
-    setLikedSongs((prevLikedSongs) => [...prevLikedSongs, track]);
-    console.log('Song liked:', track);
+  const handleLikeSong = async () => {
+    if (!user) return;
+    
+    try {
+      const userData = await dbGetUser(user.uid);
+      if (userData) {
+        const currentTrack = await TrackPlayer.getActiveTrack();
+        if (!currentTrack) return;
+
+        const trackObject: TrackObject = {
+          id: currentTrack.id ?? '',
+          title: currentTrack.title ?? 'Unknown Title',
+          url: currentTrack.url ?? '',
+          artist: currentTrack.artist ?? 'Unknown Artist',
+          album: currentTrack.album ?? 'Unknown Album',
+          artwork: currentTrack.artwork ?? '',
+        };
+
+        let updatedLikedTracks: TrackObject[];
+        if (isLiked) {
+          // Remove song from liked tracks
+          updatedLikedTracks = userData.likedTracks.filter(
+            (song: TrackObject) => song.id !== trackObject.id
+          );
+        } else {
+          // Add song to liked tracks
+          updatedLikedTracks = [...userData.likedTracks, trackObject];
+        }
+
+        // Update user in database
+        await dbUpdateUser(user.uid, {
+          likedTracks: updatedLikedTracks,
+        });
+
+        setIsLiked(!isLiked);
+      }
+    } catch (error) {
+      console.log('Error updating liked songs:', error);
+    }
   };
 
   return (
@@ -154,7 +194,10 @@ export default function Playing({
           onPress={handleLikeSong}
           style={style.controlBtn}>
           <Image
-            source={require('../assets/nav-icons/heart.png')}
+            source={isLiked 
+              ? require('../assets/nav-icons/heart-filled.png')
+              : require('../assets/nav-icons/heart.png')
+            }
             style={style.extraControlIcon}
           />
         </TouchableOpacity>

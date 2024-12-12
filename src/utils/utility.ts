@@ -48,6 +48,7 @@ export interface User {
   password: string;
   playlists: PlaylistObject[];
   recentlyPlayed: TrackObject[];
+  likedTracks: TrackObject[];
 }
 
 export interface UserToEdit {
@@ -55,6 +56,7 @@ export interface UserToEdit {
   password: string;
   playlists: PlaylistObject[];
   recentlyPlayed: TrackObject[];
+  likedTracks: TrackObject[];
   [key: string]: any;
 }
 
@@ -64,6 +66,7 @@ export const defaultUser: User = {
   password: '',
   playlists: [],
   recentlyPlayed: [],
+  likedTracks: [],
 };
 
 // Encrypts inputted password and returns the hashed password

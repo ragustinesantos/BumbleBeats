@@ -1,10 +1,8 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
-import TrackPlayer, {
-  Event,
-  RepeatMode,
-} from 'react-native-track-player';
+import TrackPlayer, {Event, RepeatMode} from 'react-native-track-player';
 
 interface ActiveTrack {
+  id: string;
   artwork: string;
   title: string;
   artist: string;
@@ -31,6 +29,7 @@ export const ActiveTrackProvider = ({children}: {children: any}) => {
   const checkTrack = async () => {
     const getTrack = await TrackPlayer.getActiveTrack();
     const formatTrack: ActiveTrack = {
+      id: getTrack?.id || '',
       artwork: getTrack?.artwork || '',
       title: getTrack?.title || '',
       artist: getTrack?.artist || '',

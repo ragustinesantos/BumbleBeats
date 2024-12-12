@@ -1,55 +1,40 @@
-import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import TrackPlayer from 'react-native-track-player';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
+import {useActiveTrackContext} from '../_utils/queue-context';
 
 
-type SongModalParams = {
-  artwork: string,
-  title: string,
-  artist: string,
-  isVisible: boolean,
-};
 
-export default function SongModal(params: SongModalParams): React.JSX.Element {
-  const artwork = params.artwork;
-  const title = params.title;
-  const artist = params.artist;
-  const isVisible = params.isVisible;
-
-  // Need to implement visibility
-  //if (!isVisible) return null;
-
-  const handleExpand = () => {
-    //Expand the player to the Playing screen
-  };
+export default function SongModal(): React.JSX.Element {
+  const {
+    activeTrack,
+    skipToNext,
+    togglePlayPause,
+    playing,
+  } = useActiveTrackContext() || {};
 
   return (
-    <TouchableOpacity style={style.container} onPress={handleExpand}>
-      <Image
-        source={{uri: artwork}}
-        style={style.artwork}
-      />
+    <TouchableOpacity style={style.container}>
+      <Image source={{uri: activeTrack?.artwork}} style={style.artwork} />
       <View style={style.infoContainer}>
-        <Text style={style.title}>
-          {title}
-        </Text>
-        <Text style={style.artist}>
-          {artist}
-        </Text>
+        <Text style={style.title}>{activeTrack?.title}</Text>
+        <Text style={style.artist}>{activeTrack?.artist}</Text>
       </View>
-        <TouchableOpacity onPress={() => TrackPlayer.play()}>
-          <Image
-            source={require('../assets/nav-icons/play.png')}
-            style={style.pausePlay}
-          />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={togglePlayPause}>
+        <Image
+          source={
+            playing
+              ? require('../assets/nav-icons/pause.png')
+              : require('../assets/nav-icons/play.png')
+          }
+          style={style.pausePlay}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={skipToNext}>
+        <Image
+          source={require('../assets/nav-icons/skip-forward.png')}
+          style={style.pausePlay}
+        />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
@@ -57,16 +42,16 @@ export default function SongModal(params: SongModalParams): React.JSX.Element {
 const style = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    zIndex: 50,
+    bottom: 68,
     height: 70,
-    backgroundColor: '#002538',
+    width: '100%',
+    backgroundColor: '#E9A941',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
-    borderTopWidth: 1,
-    borderColor: 'white',
   },
 
   artwork: {
@@ -85,19 +70,18 @@ const style = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#002538',
   },
 
   artist: {
     fontSize: 12,
-    color: '#B0B0B0',
+    color: '#002538',
   },
 
   pausePlay: {
     width: 20,
     height: 20,
-    tintColor: 'white',
-    marginLeft: 10,
-    marginRight: 10
+    tintColor: '#002538',
+    marginRight: 10,
   },
 });

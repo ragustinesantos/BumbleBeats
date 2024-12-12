@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -9,10 +10,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import GenreCard from '../components/GenreCard';
-import { defaultTrack, TrackObject } from '../utils/utility';
+import {defaultTrack, TrackObject} from '../utils/utility';
 import TrackPlayer from 'react-native-track-player';
 import SearchResult from '../components/SearchResult';
-import { FlatList } from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
+import {useActiveTrackContext} from '../_utils/queue-context';
 
 export default function Search({
   navigation,
@@ -25,6 +27,7 @@ export default function Search({
       ...defaultTrack,
     },
   ]);
+  const {activeTrack} = useActiveTrackContext() || {};
 
   // Add a list of songs to the queue
   const enqueue = async (tracks: Array<TrackObject>) => {
@@ -66,7 +69,7 @@ export default function Search({
         }
 
         setSearchResults(resultData);
-      } catch (error) { }
+      } catch (error) {}
     };
 
     if (searchVal.length > 0) {
@@ -78,15 +81,15 @@ export default function Search({
     <FlatList
       data={searchResults}
       keyExtractor={track => track.id.toString()}
-      renderItem={({ item }) => {
+      renderItem={({item}) => {
         return (
           <TouchableOpacity
             style={styles.searchResult}
             onPress={async () => {
               await enqueue([item]);
-              navigation.navigate('Playing', { item, source: 'Search' });
+              navigation.navigate('Playing', {item, source: 'Search'});
               // TODO: Decide whether to using 'Playing' from tab navigator or 'PLAYING' from stack navigator
-              setSearchVal("");
+              setSearchVal('');
             }}>
             <SearchResult track={item} />
           </TouchableOpacity>
@@ -138,6 +141,7 @@ export default function Search({
           <GenreCard name="kpop" navigation={navigation} />
           <GenreCard name="radio" navigation={navigation} />
         </View>
+        {activeTrack ? <View style={{height: 80}} /> : null}
       </ScrollView>
     </View>
   );
@@ -184,7 +188,7 @@ const styles = StyleSheet.create({
     left: 20,
     position: 'absolute',
     zIndex: 10,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.3,
     shadowColor: '#000',
     shadowRadius: 10,

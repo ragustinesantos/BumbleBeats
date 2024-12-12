@@ -1,9 +1,11 @@
+/* eslint-disable react-native/no-inline-styles */
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import SearchResult from '../components/SearchResult';
 import React, {useEffect, useState} from 'react';
 import {defaultTrack, TrackObject} from '../utils/utility';
 import TrackPlayer from 'react-native-track-player';
+import {useActiveTrackContext} from '../_utils/queue-context';
 
 export default function GenreSearch({
   route,
@@ -13,12 +15,12 @@ export default function GenreSearch({
   navigation: any;
 }) {
   const {searchVal} = route.params;
-
   const [searchResults, setSearchResults] = useState<TrackObject[]>([
     {
       ...defaultTrack,
     },
   ]);
+  const {activeTrack} = useActiveTrackContext() || {};
 
   // Add a list of songs to the queue
   const enqueue = async (tracks: Array<TrackObject>) => {
@@ -59,7 +61,7 @@ export default function GenreSearch({
     };
 
     search();
-  }, []);
+  }, [searchVal]);
 
   const mappedSearchResults = (
     <FlatList
@@ -87,6 +89,7 @@ export default function GenreSearch({
       {searchResults && (
         <View style={styles.searchResultView}>{mappedSearchResults}</View>
       )}
+      {activeTrack ? <View style={{height: 80}} /> : null}
     </View>
   );
 }

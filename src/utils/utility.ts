@@ -69,6 +69,20 @@ export const defaultUser: User = {
   likedTracks: [],
 };
 
+
+export interface recentlyPlayedTrack {
+  playOrder: number,
+  trackId: string
+};
+
+export type AppStackParamList = {
+  Home: undefined;
+  Playlists: undefined;
+  Playing: {source: string}; // Define any params the screen accepts
+  Search: undefined;
+  APP: undefined;
+};
+
 // Encrypts inputted password and returns the hashed password
 export async function hashPassword(password: string) {
   try {

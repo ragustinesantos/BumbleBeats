@@ -3,9 +3,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import ProgressBar from '../components/ProgressBar';
-import { defaultPlayingObject, PlayingObject, recentlyPlayedTrack } from '../utils/utility';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import { useUserAuth } from '../_utils/auth-context';
+import { defaultPlayingObject, PlayingObject,  TrackObject, recentlyPlayedTrack } from '../utils/utility';
 import { dbGetAllUsers, dbGetUser, dbUpdateUser } from '../_services/users-service';
 import {useActiveTrackContext} from '../_utils/queue-context';
 
@@ -29,11 +29,11 @@ export default function Playing({
     setPlaying,
   } = useActiveTrackContext() || {};
 
-  const [track, setTrack] = useState<PlayingObject>({ ...defaultPlayingObject });
-
-  const [likedSongs, setLikedSongs] = useState<PlayingObject[]>([]);
-
   const { user } = useUserAuth() || {};
+
+  const [track, setTrack] = useState<PlayingObject>({...defaultPlayingObject});
+
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     if (source === 'Home') {
@@ -108,9 +108,45 @@ export default function Playing({
     }, [activeTrack]),
   );
 
-  const handleLikeSong = () => {
-    setLikedSongs(prevLikedSongs => [...prevLikedSongs, track]);
-    console.log('Song liked:', track);
+  const handleLikeSong = async () => {
+    if (!user) return;
+    
+    try {
+      const userData = await dbGetUser(user.uid);
+      if (userData) {
+        const currentTrack = await TrackPlayer.getActiveTrack();
+        if (!currentTrack) return;
+
+        const trackObject: TrackObject = {
+          id: currentTrack.id ?? '',
+          title: currentTrack.title ?? 'Unknown Title',
+          url: currentTrack.url ?? '',
+          artist: currentTrack.artist ?? 'Unknown Artist',
+          album: currentTrack.album ?? 'Unknown Album',
+          artwork: currentTrack.artwork ?? '',
+        };
+
+        let updatedLikedTracks: TrackObject[];
+        if (isLiked) {
+          // Remove song from liked tracks
+          updatedLikedTracks = userData.likedTracks.filter(
+            (song: TrackObject) => song.id !== trackObject.id
+          );
+        } else {
+          // Add song to liked tracks
+          updatedLikedTracks = [...userData.likedTracks, trackObject];
+        }
+
+        // Update user in database
+        await dbUpdateUser(user.uid, {
+          likedTracks: updatedLikedTracks,
+        });
+
+        setIsLiked(!isLiked);
+      }
+    } catch (error) {
+      console.log('Error updating liked songs:', error);
+    }
   };
 
   return (
@@ -172,7 +208,10 @@ export default function Playing({
 
         <TouchableOpacity onPress={handleLikeSong} style={style.controlBtn}>
           <Image
-            source={require('../assets/nav-icons/heart.png')}
+            source={isLiked 
+              ? require('../assets/nav-icons/heart-filled.png')
+              : require('../assets/nav-icons/heart.png')
+            }
             style={style.extraControlIcon}
           />
         </TouchableOpacity>

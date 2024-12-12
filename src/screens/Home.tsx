@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback } from 'react';
 import { useState, useEffect } from 'react';
@@ -16,6 +17,8 @@ import TrackPlayer from 'react-native-track-player';
 import { useFocusEffect } from '@react-navigation/native';
 import { dbGetAllUsers, dbGetUser } from '../_services/users-service';
 import { useUserAuth } from '../_utils/auth-context';
+import {useActiveTrackContext} from '../_utils/queue-context';
+import {ScrollView} from 'react-native-gesture-handler';
 
 export default function Home({
   navigation,
@@ -36,6 +39,7 @@ export default function Home({
     'BTS',
     'Barry Flies Out',
   ];
+  const {activeTrack} = useActiveTrackContext() || {};
 
   // Add a list of songs to the queue
   const enqueue = async (tracks: Array<TrackObject>) => {
@@ -44,9 +48,6 @@ export default function Home({
 
     // Add passed value to the queue
     await TrackPlayer.add(tracks);
-
-    // Log queue
-    console.log(await TrackPlayer.getQueue());
   };
 
   const generateRandomIndex = (listReference: any[]) => {
@@ -222,7 +223,7 @@ export default function Home({
   };
 
   return (
-    <View style={styles.pageContainer}>
+    <ScrollView style={styles.pageContainer}>
       <Text style={styles.sectionLabel}>RECENTLY PLAYED</Text>
       {isLoading ? (
         <Image
@@ -277,13 +278,14 @@ export default function Home({
           mappedTracks(suggested)
         )}
       </View>
-    </View>
+      {activeTrack ? <View style={{height: 80}} /> : null}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   pageContainer: {
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
   },
 
   sectionLabel: {

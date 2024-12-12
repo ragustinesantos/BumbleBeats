@@ -7,6 +7,8 @@ import { defaultPlayingObject, PlayingObject, recentlyPlayedTrack } from '../uti
 import { useFocusEffect } from '@react-navigation/native';
 import { useUserAuth } from '../_utils/auth-context';
 import { dbGetAllUsers, dbGetUser, dbUpdateUser } from '../_services/users-service';
+import {useActiveTrackContext} from '../_utils/queue-context';
+
 
 export default function Playing({
   route,
@@ -15,13 +17,19 @@ export default function Playing({
   route: any;
   navigation: any;
 }): React.JSX.Element {
-  const { source } = route.params;
+  const {source} = route.params;
+  const {
+    activeTrack,
+    skipToNext,
+    skipToPrevious,
+    toggleLoop,
+    togglePlayPause,
+    isLooping,
+    playing,
+    setPlaying,
+  } = useActiveTrackContext() || {};
 
   const [track, setTrack] = useState<PlayingObject>({ ...defaultPlayingObject });
-
-  const [playing, setPlaying] = useState(false);
-
-  const [isLooping, setIsLooping] = useState(false);
 
   const [likedSongs, setLikedSongs] = useState<PlayingObject[]>([]);
 
@@ -41,15 +49,16 @@ export default function Playing({
     useCallback(() => {
       const fetchTrack = async () => {
         try {
-          const playingTrack = await TrackPlayer.getActiveTrack();
-          if (playingTrack) {
+          if (activeTrack) {
             setTrack({
-              title: playingTrack?.title,
-              artist: playingTrack?.artist,
-              artwork: playingTrack?.artwork,
+              title: activeTrack?.title,
+              artist: activeTrack?.artist,
+              artwork: activeTrack?.artwork,
             });
             TrackPlayer.play();
-            setPlaying(true);
+             if (setPlaying) {
+              setPlaying(true);
+            }
 
             // Retrieves the user record from the database
             let matchedUser;
@@ -64,7 +73,7 @@ export default function Playing({
                   // This entire section updates the recently played. 
                   let userRecentlyPlayed: recentlyPlayedTrack[] = retrievedUser.recentlyPlayed;
 
-                  if (!userRecentlyPlayed.some((track) => track.trackId == playingTrack.id)) {
+                  if (!userRecentlyPlayed.some((track) => track.trackId == activeTrack.id)) {
                     // It should only store 6 tracks so the oldest track gets removed when it is already at 6.
                     if (userRecentlyPlayed.length > 5) {
                       userRecentlyPlayed = userRecentlyPlayed.filter((track) => track.playOrder != 1);
@@ -90,50 +99,17 @@ export default function Playing({
                 }
               }
             }
-
           }
         } catch (error) {
           console.log(error);
         }
       };
       fetchTrack();
-    }, []),
+    }, [activeTrack]),
   );
 
-  // Pausing/playing
-  const togglePlayPause = async () => {
-    if (playing) {
-      await TrackPlayer.pause();
-    } else {
-      await TrackPlayer.play();
-    }
-    setPlaying(!playing);
-  };
-
-  // Skipping next
-  const skipToNext = async () => {
-    await TrackPlayer.skipToNext();
-  };
-
-  // Skipping prev
-  const skipToPrevious = async () => {
-    await TrackPlayer.skipToPrevious();
-  };
-
-  // Looping songs using RepeatMode
-  const toggleLoop = async () => {
-    const currentRepeatMode = await TrackPlayer.getRepeatMode();
-    if (currentRepeatMode === RepeatMode.Track) {
-      await TrackPlayer.setRepeatMode(RepeatMode.Off);
-      setIsLooping(false);
-    } else {
-      await TrackPlayer.setRepeatMode(RepeatMode.Track);
-      setIsLooping(true);
-    }
-  };
-
   const handleLikeSong = () => {
-    setLikedSongs((prevLikedSongs) => [...prevLikedSongs, track]);
+    setLikedSongs(prevLikedSongs => [...prevLikedSongs, track]);
     console.log('Song liked:', track);
   };
 
@@ -141,32 +117,31 @@ export default function Playing({
     <View style={style.container}>
       <Image
         source={
-          track.artwork
-            ? { uri: track.artwork }
-            : { uri: 'https://via.placeholder.com/150' }
+          activeTrack?.artwork
+            ? {uri: activeTrack?.artwork}
+            : {uri: 'https://via.placeholder.com/150'}
         }
         style={style.art}
       />
 
       <View style={style.trackInfo}>
-        <Text style={style.title}>{track.title}</Text>
-        <Text style={style.artist}>{track.artist}</Text>
+        <Text style={style.title}>{activeTrack?.title}</Text>
+        <Text style={style.artist}>{activeTrack?.artist}</Text>
       </View>
 
       <ProgressBar />
 
       <View style={style.controls}>
-        <TouchableOpacity
-          onPress={toggleLoop}
-          style={style.controlBtn}>
+
+        <TouchableOpacity onPress={toggleLoop} style={style.controlBtn}>
           <View style={style.loopContainer}>
             <Image
               source={require('../assets/nav-icons/repeat.png')}
               style={style.extraControlIcon}
             />
-            <View>
-              {isLooping && <View style={style.loopIndicator} />}
-            </View>
+
+            <View>{isLooping && <View style={style.loopIndicator} />}</View>
+
           </View>
         </TouchableOpacity>
 
@@ -195,9 +170,7 @@ export default function Playing({
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={handleLikeSong}
-          style={style.controlBtn}>
+        <TouchableOpacity onPress={handleLikeSong} style={style.controlBtn}>
           <Image
             source={require('../assets/nav-icons/heart.png')}
             style={style.extraControlIcon}
@@ -283,7 +256,7 @@ const style = StyleSheet.create({
     width: 3,
     height: 3,
     borderRadius: 4,
-    backgroundColor: "#E9A941",
+    backgroundColor: '#E9A941',
     alignSelf: 'center',
-  }
+  },
 });

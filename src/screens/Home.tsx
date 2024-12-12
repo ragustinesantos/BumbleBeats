@@ -285,7 +285,7 @@ export default function Home({
 
 const styles = StyleSheet.create({
   pageContainer: {
-    paddingHorizontal: 20,
+    padding: 10,
   },
 
   sectionLabel: {

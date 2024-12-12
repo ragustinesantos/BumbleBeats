@@ -1,10 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useCallback, useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import ProgressBar from '../components/ProgressBar';
-import {defaultPlayingObject, PlayingObject} from '../utils/utility';
-import {useFocusEffect} from '@react-navigation/native';
+import { defaultPlayingObject, PlayingObject, recentlyPlayedTrack } from '../utils/utility';
+import { useFocusEffect } from '@react-navigation/native';
+import { useUserAuth } from '../_utils/auth-context';
+import { dbGetAllUsers, dbGetUser, dbUpdateUser } from '../_services/users-service';
 
 export default function Playing({
   route,
@@ -13,15 +15,17 @@ export default function Playing({
   route: any;
   navigation: any;
 }): React.JSX.Element {
-  const {source} = route.params;
+  const { source } = route.params;
 
-  const [track, setTrack] = useState<PlayingObject>({...defaultPlayingObject});
+  const [track, setTrack] = useState<PlayingObject>({ ...defaultPlayingObject });
 
   const [playing, setPlaying] = useState(false);
 
   const [isLooping, setIsLooping] = useState(false);
 
   const [likedSongs, setLikedSongs] = useState<PlayingObject[]>([]);
+
+  const { user } = useUserAuth() || {};
 
   useEffect(() => {
     if (source === 'Home') {
@@ -46,6 +50,47 @@ export default function Playing({
             });
             TrackPlayer.play();
             setPlaying(true);
+
+            // Retrieves the user record from the database
+            let matchedUser;
+            const retrievedUsers = await dbGetAllUsers();
+            if (retrievedUsers) {
+              matchedUser = retrievedUsers.find(
+                current => current.email === user?.email,
+              );
+              if (matchedUser) {
+                const retrievedUser = await dbGetUser(matchedUser.id);
+                if (retrievedUser) {
+                  // This entire section updates the recently played. 
+                  let userRecentlyPlayed: recentlyPlayedTrack[] = retrievedUser.recentlyPlayed;
+
+                  if (!userRecentlyPlayed.some((track) => track.trackId == playingTrack.id)) {
+                    // It should only store 6 tracks so the oldest track gets removed when it is already at 6.
+                    if (userRecentlyPlayed.length > 5) {
+                      userRecentlyPlayed = userRecentlyPlayed.filter((track) => track.playOrder != 1);
+                      userRecentlyPlayed = userRecentlyPlayed.map((track) => {
+                        const newtrack: recentlyPlayedTrack = {
+                          playOrder: track.playOrder - 1,
+                          trackId: track.trackId
+                        }
+                        return newtrack;
+                      });
+                    }
+                    const newSong: recentlyPlayedTrack = {
+                      playOrder: userRecentlyPlayed.length + 1,
+                      trackId: playingTrack.id
+                    }
+                    // Adds the new song to the array and updates the database
+                    userRecentlyPlayed.push(newSong);
+                    const updatedRecentlyPlayed = {
+                      recentlyPlayed: userRecentlyPlayed
+                    };
+                    await dbUpdateUser(matchedUser.id, updatedRecentlyPlayed);
+                  }
+                }
+              }
+            }
+
           }
         } catch (error) {
           console.log(error);
@@ -97,8 +142,8 @@ export default function Playing({
       <Image
         source={
           track.artwork
-            ? {uri: track.artwork}
-            : {uri: 'https://via.placeholder.com/150'}
+            ? { uri: track.artwork }
+            : { uri: 'https://via.placeholder.com/150' }
         }
         style={style.art}
       />
@@ -114,15 +159,15 @@ export default function Playing({
         <TouchableOpacity
           onPress={toggleLoop}
           style={style.controlBtn}>
-            <View style={style.loopContainer}>
-              <Image
-                source={require('../assets/nav-icons/repeat.png')}
-                style={style.extraControlIcon}
-              />
-              <View>
-                {isLooping && <View style={style.loopIndicator} />}
-              </View>
+          <View style={style.loopContainer}>
+            <Image
+              source={require('../assets/nav-icons/repeat.png')}
+              style={style.extraControlIcon}
+            />
+            <View>
+              {isLooping && <View style={style.loopIndicator} />}
             </View>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={skipToPrevious} style={style.controlBtn}>
@@ -228,7 +273,7 @@ const style = StyleSheet.create({
     height: 30,
   },
 
-  loopContainer:{
+  loopContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     height: 50,

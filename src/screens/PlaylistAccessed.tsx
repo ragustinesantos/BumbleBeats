@@ -1,24 +1,41 @@
-import React, { useState } from 'react';
-import {Image, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState} from 'react';
+import {
+  Image,
+  Text,
+  TextInput,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import SongListCard from '../components/SongListCard';
 import TrackPlayer from 'react-native-track-player';
-import { TrackObject } from '../utils/utility';
+import {TrackObject} from '../utils/utility';
 
-export default function PlaylistAccessed({route, navigation} : {route: any; navigation: any}): React.JSX.Element {
-  const { playlistName, numOfSongs, tracks } = route.params;
+export default function PlaylistAccessed({
+  route,
+  navigation,
+}: {
+  route: any;
+  navigation: any;
+}): React.JSX.Element {
+  const {playlistName, numOfSongs, tracks} = route.params;
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const [search, setSearch] = useState('');
   const [foundSongs, setFoundSongs] = useState<TrackObject[]>(tracks);
-  const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<TrackObject | null>(null);
+  const [currentlyPlayingSong, setCurrentlyPlayingSong] =
+    useState<TrackObject | null>(null);
 
   const handleSearch = (entered: string) => {
     setSearch(entered);
     const lowercasedQuery = entered.toLowerCase();
-    const filtered = tracks.filter((track: TrackObject) =>
+    const filtered = tracks.filter(
+      (track: TrackObject) =>
         track.title.toLowerCase().includes(lowercasedQuery) ||
-        track.artist.toLowerCase().includes(lowercasedQuery)
+        track.artist.toLowerCase().includes(lowercasedQuery),
     );
     setFoundSongs(filtered);
   };
@@ -29,7 +46,7 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
         console.warn('No tracks in the playlist');
         return;
       }
-  
+
       if (isPlaying) {
         await TrackPlayer.pause();
       } else {
@@ -38,9 +55,9 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
           url: track.url,
           title: track.title,
           artist: track.artist,
-          artwork: track.artwork
+          artwork: track.artwork,
         }));
-  
+
         await TrackPlayer.reset();
         await TrackPlayer.add(trackPlayerTracks);
         await TrackPlayer.play();
@@ -56,7 +73,9 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
       const shuffledTracks = [...tracks].sort(() => Math.random() - 0.5);
       await TrackPlayer.reset();
       await TrackPlayer.add(shuffledTracks);
-      if (isPlaying) await TrackPlayer.play();
+      if (isPlaying) {
+        await TrackPlayer.play();
+      }
     }
     setIsShuffling(!isShuffling);
   };
@@ -66,13 +85,12 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
     console.log('Currently playing song:', currentlyPlayingSong?.title);
 
     try {
-
       const trackToPlay = {
         id: item.id.toString(),
         url: item.url,
         title: item.title,
         artist: item.artist,
-        artwork: item.artwork
+        artwork: item.artwork,
       };
 
       if (currentlyPlayingSong && currentlyPlayingSong.id === item.id) {
@@ -83,18 +101,17 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
 
       await TrackPlayer.stop();
       await TrackPlayer.reset();
-      
+
       await TrackPlayer.add(trackToPlay);
       await TrackPlayer.play();
 
       setCurrentlyPlayingSong(item);
-
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  return(
+  return (
     <View style={style.container}>
       <View style={style.searchContainer}>
         <TextInput
@@ -102,7 +119,7 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
           placeholder="Search Song..."
           value={search}
           onChangeText={handleSearch}
-          />
+        />
         <Image source={require('../assets/nav-icons/magnifying-glass.png')} />
       </View>
 
@@ -122,10 +139,12 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
       </View>
 
       <View style={style.btnContainer}>
-      <TouchableOpacity
+        <TouchableOpacity
           style={[
             style.playBtn,
-            isPlaying ? { backgroundColor: "#E9A941" } : { backgroundColor: '#002538' },
+            isPlaying
+              ? {backgroundColor: '#E9A941'}
+              : {backgroundColor: '#002538'},
           ]}
           onPress={handlePlayPress}>
           <Image
@@ -137,7 +156,9 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
         <TouchableOpacity
           style={[
             style.shuffleBtn,
-            isShuffling ? { backgroundColor: "#E9A941" } : { backgroundColor: '#002538' },
+            isShuffling
+              ? {backgroundColor: '#E9A941'}
+              : {backgroundColor: '#002538'},
           ]}
           onPress={handleShufflePress}>
           <Image
@@ -151,8 +172,8 @@ export default function PlaylistAccessed({route, navigation} : {route: any; navi
       <FlatList
         style={style.songList}
         data={foundSongs}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => (
           <SongListCard
             artwork={item.artwork}
             title={item.title}
@@ -204,14 +225,14 @@ const style = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
     borderTopLeftRadius: 5,
-    borderTopRightRadius: 5
+    borderTopRightRadius: 5,
   },
 
   txtContainer: {
     width: '100%',
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
-    backgroundColor: '#002538'
+    backgroundColor: '#002538',
   },
 
   playlistName: {
@@ -220,7 +241,7 @@ const style = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 5,
     paddingLeft: 8,
-    paddingTop: 5
+    paddingTop: 5,
   },
 
   numOfSongs: {
@@ -228,7 +249,7 @@ const style = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
     paddingBottom: 5,
-    paddingLeft: 8
+    paddingLeft: 8,
   },
 
   btnContainer: {
@@ -236,7 +257,7 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 20,
     marginHorizontal: 10,
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   playBtn: {
@@ -257,26 +278,26 @@ const style = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 10,
     width: '49%',
-    height: 40, 
+    height: 40,
     justifyContent: 'center',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   btnIcon: {
-    marginRight: 5
+    marginRight: 5,
   },
 
   btnTxt: {
     color: 'white',
     fontWeight: '600',
     fontSize: 16,
-    marginRight: 10
+    marginRight: 10,
   },
 
   songList: {
     paddingHorizontal: 10,
     borderBottomColor: 'gray',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
-})
+});

@@ -1,14 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import TrackPlayer, { RepeatMode } from 'react-native-track-player';
+import React, {useCallback, useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import TrackPlayer from 'react-native-track-player';
 import ProgressBar from '../components/ProgressBar';
 import {useFocusEffect} from '@react-navigation/native';
-import { useUserAuth } from '../_utils/auth-context';
-import { defaultPlayingObject, PlayingObject,  TrackObject, recentlyPlayedTrack } from '../utils/utility';
-import { dbGetAllUsers, dbGetUser, dbUpdateUser } from '../_services/users-service';
+import {useUserAuth} from '../_utils/auth-context';
+import {TrackObject, recentlyPlayedTrack} from '../utils/utility';
+import {
+  dbGetAllUsers,
+  dbGetUser,
+  dbUpdateUser,
+} from '../_services/users-service';
 import {useActiveTrackContext} from '../_utils/queue-context';
-
 
 export default function Playing({
   route,
@@ -29,9 +32,7 @@ export default function Playing({
     setPlaying,
   } = useActiveTrackContext() || {};
 
-  const { user } = useUserAuth() || {};
-
-  const [track, setTrack] = useState<PlayingObject>({...defaultPlayingObject});
+  const {user} = useUserAuth() || {};
 
   const [isLiked, setIsLiked] = useState(false);
 
@@ -50,13 +51,8 @@ export default function Playing({
       const fetchTrack = async () => {
         try {
           if (activeTrack) {
-            setTrack({
-              title: activeTrack?.title,
-              artist: activeTrack?.artist,
-              artwork: activeTrack?.artwork,
-            });
             TrackPlayer.play();
-             if (setPlaying) {
+            if (setPlaying) {
               setPlaying(true);
             }
 
@@ -70,29 +66,36 @@ export default function Playing({
               if (matchedUser) {
                 const retrievedUser = await dbGetUser(matchedUser.id);
                 if (retrievedUser) {
-                  // This entire section updates the recently played. 
-                  let userRecentlyPlayed: recentlyPlayedTrack[] = retrievedUser.recentlyPlayed;
+                  // This entire section updates the recently played.
+                  let userRecentlyPlayed: recentlyPlayedTrack[] =
+                    retrievedUser.recentlyPlayed;
 
-                  if (!userRecentlyPlayed.some((track) => track.trackId == activeTrack.id)) {
+                  if (
+                    !userRecentlyPlayed.some(
+                      track => track.trackId === activeTrack.id,
+                    )
+                  ) {
                     // It should only store 6 tracks so the oldest track gets removed when it is already at 6.
                     if (userRecentlyPlayed.length > 5) {
-                      userRecentlyPlayed = userRecentlyPlayed.filter((track) => track.playOrder != 1);
-                      userRecentlyPlayed = userRecentlyPlayed.map((track) => {
-                        const newtrack: recentlyPlayedTrack = {
+                      userRecentlyPlayed = userRecentlyPlayed.filter(
+                        track => track.playOrder !== 1,
+                      );
+                      userRecentlyPlayed = userRecentlyPlayed.map(track => {
+                        const newTrack: recentlyPlayedTrack = {
                           playOrder: track.playOrder - 1,
-                          trackId: track.trackId
-                        }
-                        return newtrack;
+                          trackId: track.trackId,
+                        };
+                        return newTrack;
                       });
                     }
                     const newSong: recentlyPlayedTrack = {
                       playOrder: userRecentlyPlayed.length + 1,
-                      trackId: playingTrack.id
-                    }
+                      trackId: activeTrack.id,
+                    };
                     // Adds the new song to the array and updates the database
                     userRecentlyPlayed.push(newSong);
                     const updatedRecentlyPlayed = {
-                      recentlyPlayed: userRecentlyPlayed
+                      recentlyPlayed: userRecentlyPlayed,
                     };
                     await dbUpdateUser(matchedUser.id, updatedRecentlyPlayed);
                   }
@@ -109,13 +112,17 @@ export default function Playing({
   );
 
   const handleLikeSong = async () => {
-    if (!user) return;
-    
+    if (!user) {
+      return;
+    }
+
     try {
       const userData = await dbGetUser(user.uid);
       if (userData) {
         const currentTrack = await TrackPlayer.getActiveTrack();
-        if (!currentTrack) return;
+        if (!currentTrack) {
+          return;
+        }
 
         const trackObject: TrackObject = {
           id: currentTrack.id ?? '',
@@ -130,7 +137,7 @@ export default function Playing({
         if (isLiked) {
           // Remove song from liked tracks
           updatedLikedTracks = userData.likedTracks.filter(
-            (song: TrackObject) => song.id !== trackObject.id
+            (song: TrackObject) => song.id !== trackObject.id,
           );
         } else {
           // Add song to liked tracks
@@ -168,7 +175,6 @@ export default function Playing({
       <ProgressBar />
 
       <View style={style.controls}>
-
         <TouchableOpacity onPress={toggleLoop} style={style.controlBtn}>
           <View style={style.loopContainer}>
             <Image
@@ -177,7 +183,6 @@ export default function Playing({
             />
 
             <View>{isLooping && <View style={style.loopIndicator} />}</View>
-
           </View>
         </TouchableOpacity>
 
@@ -208,9 +213,10 @@ export default function Playing({
 
         <TouchableOpacity onPress={handleLikeSong} style={style.controlBtn}>
           <Image
-            source={isLiked 
-              ? require('../assets/nav-icons/heart-filled.png')
-              : require('../assets/nav-icons/heart.png')
+            source={
+              isLiked
+                ? require('../assets/nav-icons/heart-filled.png')
+                : require('../assets/nav-icons/heart.png')
             }
             style={style.extraControlIcon}
           />

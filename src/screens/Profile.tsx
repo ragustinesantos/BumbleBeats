@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,20 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import SongListCard from '../components/SongListCard';
-import { TrackObject, defaultUser, User } from '../utils/utility';
-import { useUserAuth } from '../_utils/auth-context';
-import { dbGetAllUsers, dbGetUser, dbGetLikedTracks } from '../_services/users-service';
-import TrackPlayer from 'react-native-track-player';
+import {TrackObject, defaultUser, User} from '../utils/utility';
+import {useUserAuth} from '../_utils/auth-context';
+import {
+  dbGetAllUsers,
+  dbGetUser,
+  dbGetLikedTracks,
+} from '../_services/users-service';
 
-export default function Profile({ navigation }: { navigation: any }): React.JSX.Element {
-  const { user } = useUserAuth() || {};
+export default function Profile({
+  navigation,
+}: {
+  navigation: any;
+}): React.JSX.Element {
+  const {user} = useUserAuth() || {};
   const [likedTracks, setLikedTracks] = useState<TrackObject[]>([]);
   const [playlistCount, setPlaylistCount] = useState(0);
   const [displayName, setDisplayName] = useState<string>('');
@@ -22,7 +29,9 @@ export default function Profile({ navigation }: { navigation: any }): React.JSX.
 
   useEffect(() => {
     const fetchLikedTracks = async () => {
-      if (!user) return;
+      if (!user) {
+        return;
+      }
 
       try {
         const tracks = await dbGetLikedTracks(user.uid);
@@ -33,13 +42,15 @@ export default function Profile({ navigation }: { navigation: any }): React.JSX.
     };
 
     const fetchUserDetails = async () => {
-      if (!user) return;
+      if (!user) {
+        return;
+      }
 
       try {
         // First, find the user by email
         const retrievedUsers = await dbGetAllUsers();
         const matchedUser = retrievedUsers.find(
-          (current: User) => current.email === user.email
+          (current: User) => current.email === user.email,
         );
 
         console.log('All Users:', retrievedUsers);
@@ -48,24 +59,28 @@ export default function Profile({ navigation }: { navigation: any }): React.JSX.
 
         if (matchedUser) {
           const userData = await dbGetUser(matchedUser.id);
-          
+
           console.log('User Data:', userData);
           console.log('Playlists:', userData?.playlists);
 
-          const playlistsLength = userData?.playlists ? userData.playlists.length : 0;
+          const playlistsLength = userData?.playlists
+            ? userData.playlists.length
+            : 0;
           console.log('Playlist Count:', playlistsLength);
-          
+
           setPlaylistCount(playlistsLength);
           setDisplayName(userData?.email || user.email || 'User');
         } else {
           const userData = await dbGetUser(user.uid);
-          
+
           console.log('Fallback User Data:', userData);
           console.log('Fallback Playlists:', userData?.playlists);
 
-          const playlistsLength = userData?.playlists ? userData.playlists.length : 0;
+          const playlistsLength = userData?.playlists
+            ? userData.playlists.length
+            : 0;
           console.log('Fallback Playlist Count:', playlistsLength);
-          
+
           setPlaylistCount(playlistsLength);
           setDisplayName(user.email || 'User');
         }
@@ -77,8 +92,14 @@ export default function Profile({ navigation }: { navigation: any }): React.JSX.
     fetchLikedTracks();
     fetchUserDetails();
 
-    const likedTracksUnsubscribe = navigation.addListener('focus', fetchLikedTracks);
-    const userDetailsUnsubscribe = navigation.addListener('focus', fetchUserDetails);
+    const likedTracksUnsubscribe = navigation.addListener(
+      'focus',
+      fetchLikedTracks,
+    );
+    const userDetailsUnsubscribe = navigation.addListener(
+      'focus',
+      fetchUserDetails,
+    );
 
     return () => {
       likedTracksUnsubscribe();
@@ -87,9 +108,9 @@ export default function Profile({ navigation }: { navigation: any }): React.JSX.
   }, [navigation, user]);
 
   const handleSongPress = (track: TrackObject) => {
-    navigation.navigate('Playing', { 
+    navigation.navigate('Playing', {
       track: track,
-      source: 'Profile'
+      source: 'Profile',
     });
   };
 
@@ -114,7 +135,7 @@ export default function Profile({ navigation }: { navigation: any }): React.JSX.
       <Text style={style.likedSongsTitle}>Your Liked Songs</Text>
       <FlatList
         data={likedTracks}
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <TouchableOpacity onPress={() => handleSongPress(item)}>
             <SongListCard
               artwork={item.artwork}
@@ -123,7 +144,7 @@ export default function Profile({ navigation }: { navigation: any }): React.JSX.
             />
           </TouchableOpacity>
         )}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
         contentContainerStyle={style.songList}
       />
     </View>

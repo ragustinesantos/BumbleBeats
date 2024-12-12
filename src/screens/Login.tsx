@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  Modal,
 } from 'react-native';
 import Snackbar from 'react-native-snackbar';
+import CreateAccount from '../components/CreateAccount';
 
 export default function Login({
   handleLogin,
@@ -23,6 +25,7 @@ export default function Login({
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState(false);
+  const [isCreateAccountVisible, setIsCreateAccountVisible] = useState(false);
 
   const snackError = () => {
     return Snackbar.show({
@@ -55,6 +58,11 @@ export default function Login({
     // if (createUserWithEmail)
     //   createUserWithEmail(newEmail, newPass);
     console.log('Create Account');
+    setIsCreateAccountVisible(true);
+  };
+
+  const handleCloseCreateAccount = () => {
+    setIsCreateAccountVisible(false);
   };
 
   return (
@@ -102,6 +110,14 @@ export default function Login({
           Create an account
         </Text>
       </Text>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isCreateAccountVisible}
+        onRequestClose={handleCloseCreateAccount}
+      >
+        <CreateAccount onClose={handleCloseCreateAccount} />
+      </Modal>
     </View>
   );
 }

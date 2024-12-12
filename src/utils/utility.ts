@@ -66,6 +66,11 @@ export const defaultUser: User = {
   recentlyPlayed: [],
 };
 
+export interface recentlyPlayedTrack {
+  playOrder: number,
+  trackId: string
+};
+
 // Encrypts inputted password and returns the hashed password
 export async function hashPassword(password: string) {
   try {

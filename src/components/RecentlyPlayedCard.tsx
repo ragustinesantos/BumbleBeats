@@ -1,16 +1,19 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 type recentlyPlayedParams = {
   title: string,
+  artwork: string,
 }
 
 export default function RecentlyPlayedCard(params: recentlyPlayedParams): React.JSX.Element {
   return (
     <View style={styles.playedContainer}>
-      <View style={styles.image}>
-        {/* Place image here */}
-      </View>
+      <Image
+        style={styles.image}
+        source={{ uri: params.artwork }}
+        alt='song image'
+      />
       <Text style={styles.title}>
         {params.title}
       </Text>
@@ -22,7 +25,7 @@ const styles = StyleSheet.create({
   playedContainer: {
     backgroundColor: '#ffffff',
     borderRadius: 10,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowColor: '#000',
     shadowRadius: 10,
@@ -32,8 +35,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    height: 50,
+    height: 55,
     width: 180,
+    overflow: 'hidden'
   },
 
   image: {
@@ -44,7 +48,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 16,
+    fontSize: 15,
     marginLeft: 5,
     color: '#000000',
   },

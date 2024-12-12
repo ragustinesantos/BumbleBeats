@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
-import {useState, useEffect} from 'react';
+import React, { useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,8 +12,11 @@ import {
 } from 'react-native';
 import RecentlyPlayedCard from '../components/RecentlyPlayedCard';
 import SongCard from '../components/SongCard';
-import {TrackObject} from '../utils/utility';
+import { recentlyPlayedTrack, TrackObject } from '../utils/utility';
 import TrackPlayer from 'react-native-track-player';
+import { useFocusEffect } from '@react-navigation/native';
+import { dbGetAllUsers, dbGetUser } from '../_services/users-service';
+import { useUserAuth } from '../_utils/auth-context';
 import {useActiveTrackContext} from '../_utils/queue-context';
 import {ScrollView} from 'react-native-gesture-handler';
 
@@ -23,14 +26,15 @@ export default function Home({
   navigation: any;
 }): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
+  const [recentlyPlayed, setRecentlyPlayed] = useState<TrackObject[]>([]);
   const [newReleases, setNewReleases] = useState<TrackObject[]>([]);
   const [suggested, setSuggested] = useState<TrackObject[]>([]);
   const numTrack = 10;
   const suggestedArtists = [
     'The Archies',
     'Rupert Gregson-Williams',
-    'Beyonce',
-    'Jay-Z',
+    'Flowers',
+    'Bee Gees',
     'Eminem',
     'BTS',
     'Barry Flies Out',
@@ -54,6 +58,61 @@ export default function Home({
     const randomizedResult = [...tracks].sort(() => 0.5 - Math.random());
     return randomizedResult.slice(0, numTrack);
   };
+
+  const { user } = useUserAuth() || {};
+
+  // This is to reload the recently played each time since the user can play music from anywhere
+  useFocusEffect(
+    useCallback(() => {
+      const populateRecentlyPlayed = async () => {
+        try {
+          // Retrieves the user record and their recently played from the database
+          let matchedUser;
+          let userRecentlyPlayed: recentlyPlayedTrack[] = [];
+          const retrievedUsers = await dbGetAllUsers();
+          if (retrievedUsers) {
+            matchedUser = retrievedUsers.find(
+              current => current.email === user?.email,
+            );
+            if (matchedUser) {
+              const retrievedUser = await dbGetUser(matchedUser.id);
+              if (retrievedUser) {
+                userRecentlyPlayed = retrievedUser.recentlyPlayed;
+              }
+            }
+          }
+
+          const recentSongList: TrackObject[] = [];
+
+          // Retrieves information for each track
+          for (let i = 0; i < userRecentlyPlayed.length; i++) {
+            const response = await fetch(
+              `https://api.deezer.com/track/${userRecentlyPlayed[i].trackId}`,
+            );
+
+            const data = await response.json();
+
+            const newTrackObject: TrackObject = {
+              id: data.id,
+              title: data.title,
+              url: data.preview,
+              artist: data.artist.name,
+              album: data.album.title,
+              artwork: data.album.cover_xl,
+            };
+            recentSongList.push(newTrackObject);
+          }
+
+          setRecentlyPlayed(recentSongList);
+          setIsLoading(false);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      setIsLoading(true);
+      populateRecentlyPlayed();
+    }, [user])
+  );
 
   // On load, retrieve titles with the current year (Deezer doesn't have search by release_date)
   useEffect(() => {
@@ -147,13 +206,13 @@ export default function Home({
         style={styles.listView}
         keyExtractor={track => track.id.toString()}
         horizontal={true}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <TouchableOpacity
               key={item.id}
               onPress={async () => {
                 await enqueue([item]);
-                navigation.navigate('Playing', {item, source: 'Home'});
+                navigation.navigate('PLAYING', { item, source: 'Home' });
               }}>
               <SongCard track={item} />
             </TouchableOpacity>
@@ -166,18 +225,35 @@ export default function Home({
   return (
     <ScrollView style={styles.pageContainer}>
       <Text style={styles.sectionLabel}>RECENTLY PLAYED</Text>
-      <View style={styles.recentlyPlayed}>
-        <RecentlyPlayedCard title="Bee Movie" />
-        <RecentlyPlayedCard title="Bee Movie" />
-      </View>
-      <View style={styles.recentlyPlayed}>
-        <RecentlyPlayedCard title="Bee Movie" />
-        <RecentlyPlayedCard title="Bee Movie" />
-      </View>
-      <View style={styles.recentlyPlayed}>
-        <RecentlyPlayedCard title="Bee Movie" />
-        <RecentlyPlayedCard title="Bee Movie" />
-      </View>
+      {isLoading ? (
+        <Image
+          style={styles.loadingGif}
+          source={require('../assets/loading/bee.gif')}
+        />
+      ) : (
+        recentlyPlayed.length > 0 ? (
+          <View style={styles.recentlyPlayed}>
+            {recentlyPlayed.map((song) => (
+              <TouchableOpacity
+                key={song.id}
+                onPress={async () => {
+                  await enqueue([song]);
+                  navigation.navigate('PLAYING', { song, source: 'Home' });
+                }}
+              >
+                <RecentlyPlayedCard
+                  key={song.id}
+                  title={song.title}
+                  artwork={song.artwork}
+                />
+              </TouchableOpacity>
+            ))
+            }
+          </View>
+        ) : (
+          <Text>Go listen to some music!</Text>
+        )
+      )}
 
       <Text style={styles.sectionLabel}>NEW RELEASES</Text>
       <View>
@@ -232,6 +308,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
   },
   listView: {
     paddingVertical: 10,

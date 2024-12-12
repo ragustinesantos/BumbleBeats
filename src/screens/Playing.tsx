@@ -1,11 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useCallback, useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import TrackPlayer from 'react-native-track-player';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import TrackPlayer, { RepeatMode } from 'react-native-track-player';
 import ProgressBar from '../components/ProgressBar';
-import {defaultPlayingObject, PlayingObject} from '../utils/utility';
-import {useFocusEffect} from '@react-navigation/native';
+import { defaultPlayingObject, PlayingObject, recentlyPlayedTrack } from '../utils/utility';
+import { useFocusEffect } from '@react-navigation/native';
+import { useUserAuth } from '../_utils/auth-context';
+import { dbGetAllUsers, dbGetUser, dbUpdateUser } from '../_services/users-service';
 import {useActiveTrackContext} from '../_utils/queue-context';
+
 
 export default function Playing({
   route,
@@ -26,9 +29,11 @@ export default function Playing({
     setPlaying,
   } = useActiveTrackContext() || {};
 
-  const [track, setTrack] = useState<PlayingObject>({...defaultPlayingObject});
+  const [track, setTrack] = useState<PlayingObject>({ ...defaultPlayingObject });
 
   const [likedSongs, setLikedSongs] = useState<PlayingObject[]>([]);
+
+  const { user } = useUserAuth() || {};
 
   useEffect(() => {
     if (source === 'Home') {
@@ -51,8 +56,48 @@ export default function Playing({
               artwork: activeTrack?.artwork,
             });
             TrackPlayer.play();
-            if (setPlaying) {
+             if (setPlaying) {
               setPlaying(true);
+            }
+
+            // Retrieves the user record from the database
+            let matchedUser;
+            const retrievedUsers = await dbGetAllUsers();
+            if (retrievedUsers) {
+              matchedUser = retrievedUsers.find(
+                current => current.email === user?.email,
+              );
+              if (matchedUser) {
+                const retrievedUser = await dbGetUser(matchedUser.id);
+                if (retrievedUser) {
+                  // This entire section updates the recently played. 
+                  let userRecentlyPlayed: recentlyPlayedTrack[] = retrievedUser.recentlyPlayed;
+
+                  if (!userRecentlyPlayed.some((track) => track.trackId == activeTrack.id)) {
+                    // It should only store 6 tracks so the oldest track gets removed when it is already at 6.
+                    if (userRecentlyPlayed.length > 5) {
+                      userRecentlyPlayed = userRecentlyPlayed.filter((track) => track.playOrder != 1);
+                      userRecentlyPlayed = userRecentlyPlayed.map((track) => {
+                        const newtrack: recentlyPlayedTrack = {
+                          playOrder: track.playOrder - 1,
+                          trackId: track.trackId
+                        }
+                        return newtrack;
+                      });
+                    }
+                    const newSong: recentlyPlayedTrack = {
+                      playOrder: userRecentlyPlayed.length + 1,
+                      trackId: playingTrack.id
+                    }
+                    // Adds the new song to the array and updates the database
+                    userRecentlyPlayed.push(newSong);
+                    const updatedRecentlyPlayed = {
+                      recentlyPlayed: userRecentlyPlayed
+                    };
+                    await dbUpdateUser(matchedUser.id, updatedRecentlyPlayed);
+                  }
+                }
+              }
             }
           }
         } catch (error) {
@@ -87,13 +132,16 @@ export default function Playing({
       <ProgressBar />
 
       <View style={style.controls}>
+
         <TouchableOpacity onPress={toggleLoop} style={style.controlBtn}>
           <View style={style.loopContainer}>
             <Image
               source={require('../assets/nav-icons/repeat.png')}
               style={style.extraControlIcon}
             />
+
             <View>{isLooping && <View style={style.loopIndicator} />}</View>
+
           </View>
         </TouchableOpacity>
 

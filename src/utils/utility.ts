@@ -66,6 +66,12 @@ export const defaultUser: User = {
   recentlyPlayed: [],
 };
 
+
+export interface recentlyPlayedTrack {
+  playOrder: number,
+  trackId: string
+};
+
 export type AppStackParamList = {
   Home: undefined;
   Playlists: undefined;

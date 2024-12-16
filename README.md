@@ -132,7 +132,23 @@ You've successfully run the BumbleBeats app! Now go listen to some music you par
 
 # Troubleshooting
 
-If you can't get this to work, contact the BumbleBeats development team.
+If you're having trouble running the application, you can try some of the following commands:
+
+```bash
+# This command moves you to the android folder
+cd .\android\
+
+# This command will delete and build your gradle
+./gradlew clean
+
+# This command returns you to the root folder of BumbleBeats
+cd..
+
+# This will start the application with a clean cache
+npm start - -reset-cache
+```
+
+If you still can't get this to work, contact the BumbleBeats development team.
 
 # Learn More
 

@@ -2,10 +2,11 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import SearchResult from '../components/SearchResult';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {defaultTrack, TrackObject} from '../utils/utility';
 import TrackPlayer from 'react-native-track-player';
 import {useActiveTrackContext} from '../_utils/queue-context';
+import {useFocusEffect} from '@react-navigation/native';
 
 export default function GenreSearch({
   route,
@@ -15,12 +16,13 @@ export default function GenreSearch({
   navigation: any;
 }) {
   const {searchVal} = route.params;
+  const {activeTrack, setIsPlayingScreen} = useActiveTrackContext() || {};
+
   const [searchResults, setSearchResults] = useState<TrackObject[]>([
     {
       ...defaultTrack,
     },
   ]);
-  const {activeTrack} = useActiveTrackContext() || {};
 
   // Add a list of songs to the queue
   const enqueue = async (tracks: Array<TrackObject>) => {
@@ -62,6 +64,14 @@ export default function GenreSearch({
 
     search();
   }, [searchVal]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (setIsPlayingScreen) {
+        setIsPlayingScreen(false);
+      }
+    }, [setIsPlayingScreen])
+  );
 
   const mappedSearchResults = (
     <FlatList

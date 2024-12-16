@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback } from 'react';
-import { useState, useEffect } from 'react';
+import React, {useCallback} from 'react';
+import {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,11 +12,11 @@ import {
 } from 'react-native';
 import RecentlyPlayedCard from '../components/RecentlyPlayedCard';
 import SongCard from '../components/SongCard';
-import { recentlyPlayedTrack, TrackObject } from '../utils/utility';
+import {recentlyPlayedTrack, TrackObject} from '../utils/utility';
 import TrackPlayer from 'react-native-track-player';
-import { useFocusEffect } from '@react-navigation/native';
-import { dbGetAllUsers, dbGetUser } from '../_services/users-service';
-import { useUserAuth } from '../_utils/auth-context';
+import {useFocusEffect} from '@react-navigation/native';
+import {dbGetAllUsers, dbGetUser} from '../_services/users-service';
+import {useUserAuth} from '../_utils/auth-context';
 import {useActiveTrackContext} from '../_utils/queue-context';
 import {ScrollView} from 'react-native-gesture-handler';
 
@@ -25,6 +25,8 @@ export default function Home({
 }: {
   navigation: any;
 }): React.JSX.Element {
+  const {activeTrack, setIsPlayingScreen} = useActiveTrackContext() || {};
+
   const [isLoading, setIsLoading] = useState(true);
   const [recentlyPlayed, setRecentlyPlayed] = useState<TrackObject[]>([]);
   const [newReleases, setNewReleases] = useState<TrackObject[]>([]);
@@ -39,7 +41,6 @@ export default function Home({
     'BTS',
     'Barry Flies Out',
   ];
-  const {activeTrack} = useActiveTrackContext() || {};
 
   // Add a list of songs to the queue
   const enqueue = async (tracks: Array<TrackObject>) => {
@@ -59,7 +60,7 @@ export default function Home({
     return randomizedResult.slice(0, numTrack);
   };
 
-  const { user } = useUserAuth() || {};
+  const {user} = useUserAuth() || {};
 
   // This is to reload the recently played each time since the user can play music from anywhere
   useFocusEffect(
@@ -111,7 +112,7 @@ export default function Home({
       };
       setIsLoading(true);
       populateRecentlyPlayed();
-    }, [user])
+    }, [user]),
   );
 
   // On load, retrieve titles with the current year (Deezer doesn't have search by release_date)
@@ -199,6 +200,14 @@ export default function Home({
     populateSuggested();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (setIsPlayingScreen) {
+        setIsPlayingScreen(false);
+      }
+    }, [setIsPlayingScreen]),
+  );
+
   const mappedTracks = (source: TrackObject[]) => {
     return (
       <FlatList
@@ -206,13 +215,13 @@ export default function Home({
         style={styles.listView}
         keyExtractor={track => track.id.toString()}
         horizontal={true}
-        renderItem={({ item }) => {
+        renderItem={({item}) => {
           return (
             <TouchableOpacity
               key={item.id}
               onPress={async () => {
                 await enqueue([item]);
-                navigation.navigate('PLAYING', { item, source: 'Home' });
+                navigation.navigate('Playing', {item, source: 'Home'});
               }}>
               <SongCard track={item} />
             </TouchableOpacity>
@@ -230,29 +239,25 @@ export default function Home({
           style={styles.loadingGif}
           source={require('../assets/loading/bee.gif')}
         />
+      ) : recentlyPlayed.length > 0 ? (
+        <View style={styles.recentlyPlayed}>
+          {recentlyPlayed.map((song, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={async () => {
+                await enqueue([song]);
+                navigation.navigate('Playing', {song, source: 'Home'});
+              }}>
+              <RecentlyPlayedCard
+                key={index}
+                title={song.title}
+                artwork={song.artwork}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
       ) : (
-        recentlyPlayed.length > 0 ? (
-          <View style={styles.recentlyPlayed}>
-            {recentlyPlayed.map((song) => (
-              <TouchableOpacity
-                key={song.id}
-                onPress={async () => {
-                  await enqueue([song]);
-                  navigation.navigate('PLAYING', { song, source: 'Home' });
-                }}
-              >
-                <RecentlyPlayedCard
-                  key={song.id}
-                  title={song.title}
-                  artwork={song.artwork}
-                />
-              </TouchableOpacity>
-            ))
-            }
-          </View>
-        ) : (
-          <Text>Go listen to some music!</Text>
-        )
+        <Text>Go listen to some music!</Text>
       )}
 
       <Text style={styles.sectionLabel}>NEW RELEASES</Text>
@@ -285,7 +290,7 @@ export default function Home({
 
 const styles = StyleSheet.create({
   pageContainer: {
-    padding: 10,
+    margin: 10,
   },
 
   sectionLabel: {

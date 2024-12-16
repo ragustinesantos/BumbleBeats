@@ -12,11 +12,13 @@ interface ActiveTrackContextType {
   activeTrack: ActiveTrack | null;
   playing: boolean;
   isLooping: boolean;
+  isPlayingScreen: boolean;
   togglePlayPause: () => void;
   skipToNext: () => void;
   skipToPrevious: () => void;
   toggleLoop: () => void;
   setPlaying: (state: boolean) => void;
+  setIsPlayingScreen: (state: boolean) => void;
 }
 
 const ActiveTrackContext = createContext<ActiveTrackContextType | null>(null);
@@ -25,6 +27,7 @@ export const ActiveTrackProvider = ({children}: {children: any}) => {
   const [activeTrack, setActiveTrack] = useState<ActiveTrack | null>(null);
   const [playing, setPlaying] = useState(false);
   const [isLooping, setIsLooping] = useState(false);
+  const [isPlayingScreen, setIsPlayingScreen] = useState(false);
 
   const checkTrack = async () => {
     const getTrack = await TrackPlayer.getActiveTrack();
@@ -84,11 +87,13 @@ export const ActiveTrackProvider = ({children}: {children: any}) => {
         activeTrack,
         playing,
         isLooping,
+        isPlayingScreen,
         togglePlayPause,
         skipToNext,
         skipToPrevious,
         toggleLoop,
         setPlaying,
+        setIsPlayingScreen,
       }}>
       {children}
     </ActiveTrackContext.Provider>

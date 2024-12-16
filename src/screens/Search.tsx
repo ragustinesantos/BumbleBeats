@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -15,6 +15,7 @@ import TrackPlayer from 'react-native-track-player';
 import SearchResult from '../components/SearchResult';
 import {FlatList} from 'react-native-gesture-handler';
 import {useActiveTrackContext} from '../_utils/queue-context';
+import {useFocusEffect} from '@react-navigation/native';
 
 export default function Search({
   navigation,
@@ -27,7 +28,7 @@ export default function Search({
       ...defaultTrack,
     },
   ]);
-  const {activeTrack} = useActiveTrackContext() || {};
+  const {activeTrack, setIsPlayingScreen} = useActiveTrackContext() || {};
 
   // Add a list of songs to the queue
   const enqueue = async (tracks: Array<TrackObject>) => {
@@ -76,6 +77,14 @@ export default function Search({
       search();
     }
   }, [searchVal]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (setIsPlayingScreen) {
+        setIsPlayingScreen(false);
+      }
+    }, [setIsPlayingScreen]),
+  );
 
   const mappedSearchResults = (
     <FlatList

@@ -29,7 +29,7 @@ export default function PlaylistList({
   const [currentUser, setCurrentUser] = useState<User>({...defaultUser});
   const [playlistList, setPlaylistList] = useState<any>([]);
   const [refreshKey, setRefreshKey] = useState<number>(0);
-  const {activeTrack} = useActiveTrackContext() || {};
+  const {activeTrack, setIsPlayingScreen} = useActiveTrackContext() || {};
 
   useFocusEffect(
     useCallback(() => {
@@ -77,6 +77,14 @@ export default function PlaylistList({
     });
   }, [navigation, playlistList]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (setIsPlayingScreen) {
+        setIsPlayingScreen(false);
+      }
+    }, [setIsPlayingScreen]),
+  );
+
   const handleDelete = async (playlistName: string) => {
     try {
       const updatedPlaylists = {
@@ -118,7 +126,13 @@ export default function PlaylistList({
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => navigation.navigate('PLAYLIST', item)}>
+              onPress={() =>
+                navigation.navigate('PLAYLIST', {
+                  playlistName: item.playlistName,
+                  tracks: item.tracks,
+                  numOfSongs: item.numOfSongs,
+                })
+              }>
               <PlaylistCard
                 playlistName={item.playlistName}
                 numOfSongs={item.numOfSongs}

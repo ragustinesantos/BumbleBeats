@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../_utils/firebase';
+import { dbAddUser } from '../_services/users-service';
 
 interface CreateAccountProps {
   onClose: () => void;
@@ -38,6 +39,14 @@ const CreateAccount = ({ onClose }: CreateAccountProps) => {
 
     try {
       await createUserWithEmailAndPassword(auth, username, password);
+      
+      await dbAddUser({
+        email: username,
+        password: password,
+        playlists: [],
+        recentlyPlayed: [],
+        likedTracks: []
+      });
       
       Alert.alert('Success', 'Account created successfully!', [
         {

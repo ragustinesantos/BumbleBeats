@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {
   Image,
@@ -10,8 +9,9 @@ import {
   View,
 } from 'react-native';
 import SongListCard from '../components/SongListCard';
-import TrackPlayer from 'react-native-track-player';
 import {TrackObject} from '../utils/utility';
+import {useActiveTrackContext} from '../_utils/queue-context';
+import TrackPlayer from 'react-native-track-player';
 
 export default function PlaylistAccessed({
   route,
@@ -20,14 +20,23 @@ export default function PlaylistAccessed({
   route: any;
   navigation: any;
 }): React.JSX.Element {
-  const {playlistName, numOfSongs, tracks} = route.params;
+  const {
+    activeTrack,
+    togglePlayPause,
+    playing,
+    skipToNext,
+    skipToPrevious,
+    setPlaying,
+  } = useActiveTrackContext() || {};
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const item = route.params;
+  const playlistName = item.playlistName;
+  const numOfSongs = item.numOfSongs;
+  const tracks = item.tracks;
+
   const [isShuffling, setIsShuffling] = useState(false);
   const [search, setSearch] = useState('');
   const [foundSongs, setFoundSongs] = useState<TrackObject[]>(tracks);
-  const [currentlyPlayingSong, setCurrentlyPlayingSong] =
-    useState<TrackObject | null>(null);
 
   const handleSearch = (entered: string) => {
     setSearch(entered);
@@ -47,67 +56,157 @@ export default function PlaylistAccessed({
         return;
       }
 
-      if (isPlaying) {
-        await TrackPlayer.pause();
-      } else {
-        const trackPlayerTracks = tracks.map((track: TrackObject) => ({
-          id: track.id,
-          url: track.url,
-          title: track.title,
-          artist: track.artist,
-          artwork: track.artwork,
-        }));
-
-        await TrackPlayer.reset();
-        await TrackPlayer.add(trackPlayerTracks);
-        await TrackPlayer.play();
-      }
-      setIsPlaying(!isPlaying);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const handleShufflePress = async () => {
-    if (!isShuffling) {
-      const shuffledTracks = [...tracks].sort(() => Math.random() - 0.5);
-      await TrackPlayer.reset();
-      await TrackPlayer.add(shuffledTracks);
-      if (isPlaying) {
-        await TrackPlayer.play();
-      }
-    }
-    setIsShuffling(!isShuffling);
-  };
-
-  const handleSongPress = async (item: TrackObject) => {
-    console.log('Song pressed:', item.title);
-    console.log('Currently playing song:', currentlyPlayingSong?.title);
-
-    try {
-      const trackToPlay = {
-        id: item.id.toString(),
-        url: item.url,
-        title: item.title,
-        artist: item.artist,
-        artwork: item.artwork,
-      };
-
-      if (currentlyPlayingSong && currentlyPlayingSong.id === item.id) {
-        await TrackPlayer.pause();
-        setCurrentlyPlayingSong(null);
+      // Using global toggle play/pause
+      if (playing) {
+        if (togglePlayPause) {
+          await togglePlayPause();
+        } else {
+          await TrackPlayer.pause();
+        }
         return;
+      }
+
+      // fetching tracks
+      let trackPlayerTracks: TrackObject[] = [];
+      for (let i = 0; i < tracks.length; i++) {
+        try {
+          const response = await fetch(`https://api.deezer.com/track/${tracks[i].id}`);
+          const data = await response.json();
+
+          const newTrackObject: TrackObject = {
+            id: data.id,
+            title: data.title,
+            url: data.preview,
+            artist: data.artist.name,
+            album: data.album.title,
+            artwork: data.album.cover_xl,
+          };
+          trackPlayerTracks.push(newTrackObject);
+        } catch (error) {
+          trackPlayerTracks.push(tracks[i]);
+        }
       }
 
       await TrackPlayer.stop();
       await TrackPlayer.reset();
 
-      await TrackPlayer.add(trackToPlay);
+      await TrackPlayer.add(trackPlayerTracks);
       await TrackPlayer.play();
 
-      setCurrentlyPlayingSong(item);
+      if (setPlaying) {
+        setPlaying(true);
+      }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error playing playlist');
+    }
+  };
+
+  const handleShufflePress = async () => {
+    try {
+      if (tracks.length === 0) {
+        console.warn('No tracks in the playlist');
+        return;
+      }
+
+      if (isShuffling) {
+        await TrackPlayer.stop();
+        await TrackPlayer.reset();
+        
+        await TrackPlayer.add(tracks);
+        
+        if (playing) {
+          await TrackPlayer.play();
+        }
+
+        setIsShuffling(false);
+        return;
+      }
+
+      // Shuffle tracks
+      const shuffledTracks = [...tracks].sort(() => Math.random() - 0.5);
+      
+      // Fetching tracks
+      let shuffledTrackPlayerTracks: TrackObject[] = [];
+      for (let i = 0; i < shuffledTracks.length; i++) {
+        try {
+          const response = await fetch(`https://api.deezer.com/track/${shuffledTracks[i].id}`);
+          const data = await response.json();
+
+          const newTrackObject: TrackObject = {
+            id: data.id,
+            title: data.title,
+            url: data.preview,
+            artist: data.artist.name,
+            album: data.album.title,
+            artwork: data.album.cover_xl,
+          };
+          shuffledTrackPlayerTracks.push(newTrackObject);
+        } catch (error) {
+          shuffledTrackPlayerTracks.push(shuffledTracks[i]);
+        }
+      }
+
+      await TrackPlayer.stop();
+      await TrackPlayer.reset();
+
+      await TrackPlayer.add(shuffledTrackPlayerTracks);
+      await TrackPlayer.play();
+
+      setIsShuffling(true);
+
+      if (setPlaying) {
+        setPlaying(true);
+      }
+    } catch (error) {
+      console.error('Error shuffling playlist');
+      setIsShuffling(false);
+    }
+  };
+
+  const handleSongPress = async (item: TrackObject) => {
+    try {
+      // Fetching tracks
+      const response = await fetch(`https://api.deezer.com/track/${item.id}`);
+      const songData = await response.json();
+
+      const trackToPlay = {
+        id: songData.id.toString(),
+        url: songData.preview,
+        title: songData.title,
+        artist: songData.artist.name,
+        artwork: songData.album.cover_xl,
+      };
+
+      await TrackPlayer.stop();
+      await TrackPlayer.reset();
+      await TrackPlayer.add(trackToPlay);
+      await TrackPlayer.play();
+      
+      if (setPlaying) {
+        setPlaying(true);
+      }
+    } catch (error) {
+      console.error('Error fetching or playing.');
+      try {
+        const trackToPlay = {
+          id: item.id.toString(),
+          url: item.url,
+          title: item.title,
+          artist: item.artist,
+          artwork: item.artwork,
+        };
+
+        await TrackPlayer.stop();
+        await TrackPlayer.reset();
+        await TrackPlayer.add(trackToPlay);
+        await TrackPlayer.play();
+        
+        if (setPlaying) {
+          setPlaying(true);
+        }
+      } catch (error) {
+        console.error('Playing failed.');
+      }
     }
   };
 
@@ -142,7 +241,7 @@ export default function PlaylistAccessed({
         <TouchableOpacity
           style={[
             style.playBtn,
-            isPlaying
+            playing
               ? {backgroundColor: '#E9A941'}
               : {backgroundColor: '#002538'},
           ]}
@@ -172,13 +271,13 @@ export default function PlaylistAccessed({
       <FlatList
         style={style.songList}
         data={foundSongs}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({item}) => (
           <SongListCard
             artwork={item.artwork}
             title={item.title}
             artist={item.artist}
-            isPlaying={currentlyPlayingSong?.id === item.id}
+            isPlaying={activeTrack?.id === item.id.toString()}
             onPress={() => handleSongPress(item)}
           />
         )}
@@ -186,6 +285,7 @@ export default function PlaylistAccessed({
     </View>
   );
 }
+
 
 const style = StyleSheet.create({
   container: {

@@ -77,11 +77,13 @@ export default function PlaylistList({
     });
   }, [navigation, playlistList]);
 
-  useEffect(() => {
-    if (setIsPlayingScreen) {
-      setIsPlayingScreen(false);
-    }
-  }, [setIsPlayingScreen, navigation]);
+  useFocusEffect(
+    useCallback(() => {
+      if (setIsPlayingScreen) {
+        setIsPlayingScreen(false);
+      }
+    }, [setIsPlayingScreen]),
+  );
 
   const handleDelete = async (playlistName: string) => {
     try {

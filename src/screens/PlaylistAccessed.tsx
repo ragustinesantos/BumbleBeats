@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   Image,
   Text,
@@ -12,15 +12,16 @@ import {
 import SongListCard from '../components/SongListCard';
 import TrackPlayer from 'react-native-track-player';
 import {TrackObject} from '../utils/utility';
+import {useActiveTrackContext} from '../_utils/queue-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function PlaylistAccessed({
   route,
-  navigation,
 }: {
   route: any;
-  navigation: any;
 }): React.JSX.Element {
   const {playlistName, numOfSongs, tracks} = route.params;
+  const {setIsPlayingScreen} = useActiveTrackContext() || {};
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
@@ -110,6 +111,14 @@ export default function PlaylistAccessed({
       console.error('Error:', error);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (setIsPlayingScreen) {
+        setIsPlayingScreen(false);
+      }
+    }, [setIsPlayingScreen]),
+  );
 
   return (
     <View style={style.container}>

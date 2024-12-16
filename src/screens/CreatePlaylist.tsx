@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   Image,
@@ -21,6 +21,8 @@ import {
 import TrackPlayer from 'react-native-track-player';
 import {dbUpdateUser} from '../_services/users-service';
 import Snackbar from 'react-native-snackbar';
+import {useActiveTrackContext} from '../_utils/queue-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function CreatePlaylist({
   navigation,
@@ -30,6 +32,7 @@ export default function CreatePlaylist({
   route: any;
 }): React.JSX.Element {
   const {user, playlistList} = route.params;
+  const {setIsPlayingScreen} = useActiveTrackContext() || {};
 
   const [searchVal, setSearchVal] = useState('');
   const [searchResults, setSearchResults] = useState<TrackObject[]>([
@@ -115,6 +118,14 @@ export default function CreatePlaylist({
       setErrors(false);
     }
   }, [errors]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (setIsPlayingScreen) {
+        setIsPlayingScreen(false);
+      }
+    }, [setIsPlayingScreen])
+  );
 
   useEffect(() => {
     const search = async () => {

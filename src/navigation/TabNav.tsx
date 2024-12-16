@@ -12,7 +12,7 @@ import {useActiveTrackContext} from '../_utils/queue-context';
 const AppNav = createBottomTabNavigator();
 
 export default function TabNav(): React.JSX.Element {
-  const {activeTrack} = useActiveTrackContext() || {};
+  const {activeTrack, isPlayingScreen} = useActiveTrackContext() || {};
   // const navigation = useNavigation<NavigationProp<AppStackParamList>>();
 
   return (
@@ -51,7 +51,7 @@ export default function TabNav(): React.JSX.Element {
         />
         <AppNav.Screen name="Search" component={SearchStackNav} />
       </AppNav.Navigator>
-      {activeTrack ? <SongModal /> : null}
+      {activeTrack && !isPlayingScreen ? <SongModal /> : null}
     </>
   );
 }

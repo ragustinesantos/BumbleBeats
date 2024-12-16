@@ -30,6 +30,7 @@ export default function Playing({
     isLooping,
     playing,
     setPlaying,
+    setIsPlayingScreen,
   } = useActiveTrackContext() || {};
 
   const {user} = useUserAuth() || {};
@@ -43,6 +44,14 @@ export default function Playing({
       });
     }
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (setIsPlayingScreen) {
+        setIsPlayingScreen(true);
+      }
+    }, [setIsPlayingScreen]),
+  );
 
   // Triggers a re-render when the screen comes into focus or selected
   // Used to update the Playing Screen on TabNav with the information on the Active Track

@@ -165,24 +165,25 @@ To learn more about React Native, take a look at the following resources:
 API - Deezer API https://developers.deezer.com/api
 
 Images and Icons Used:
-https://www.flaticon.com/free-icon/jazz_525670
-https://www.flaticon.com/free-icon/guitar_2741297
-https://www.flaticon.com/free-icon/bar-chart_478544
-https://www.flaticon.com/free-icon/conductor_1776628
-https://www.flaticon.com/free-icon/playlist_5765567
-https://www.flaticon.com/free-icon/kpop_1999536
-https://www.flaticon.com/free-icon/blues_16085300
-https://www.flaticon.com/free-icon/kpop_4993166
-https://www.flaticon.com/free-icon/beat-box_6141157
-https://www.flaticon.com/free-icon/radio_3075906
-https://in.pinterest.com/pin/163537030204906569/
-https://iconscout.com/free-lottie-animation/bee-lounging-5009360
-https://www.45worlds.com/cdalbum/cd/pycd712
-https://www.biography.com/musicians/wolfgang-mozart
-https://www.vanityfair.com/hollywood/story/super-bowl-2025-kendrick-lamar-halftime
-https://www.newyorker.com/culture/culture-desk/the-genuine-vulnerability-of-snoop-doggs-gospel-album
-https://collider.com/good-not-great-animated-movies-21st-century-ranked/
-https://www.prestigeonline.com/hk/lifestyle/culture-plus-entertainment/jyp-entertainment-founder-park-jin-young-net-worth-and-things-he-owns/
-https://www.bostonglobe.com/arts/2018/08/29/janet-jackson-celebrates-michael-jackson-birthday-with-video-remember-time/kEI5B8UJVIvNAikpvX0xFJ/story.html
-https://collider.com/guardians-of-the-galaxy-soundtrack-download/
-Led Zeppelin - Stairway To Heaven (Live at Earls Court 1975) https://www.youtube.com/watch?v=Ly6ZhQVnVow
+
+- https://www.flaticon.com/free-icon/jazz_525670
+- https://www.flaticon.com/free-icon/guitar_2741297
+- https://www.flaticon.com/free-icon/bar-chart_478544
+- https://www.flaticon.com/free-icon/conductor_1776628
+- https://www.flaticon.com/free-icon/playlist_5765567
+- https://www.flaticon.com/free-icon/kpop_1999536
+- https://www.flaticon.com/free-icon/blues_16085300
+- https://www.flaticon.com/free-icon/kpop_4993166
+- https://www.flaticon.com/free-icon/beat-box_6141157
+- https://www.flaticon.com/free-icon/radio_3075906
+- https://in.pinterest.com/pin/163537030204906569/
+- https://iconscout.com/free-lottie-animation/bee-lounging-5009360
+- https://www.45worlds.com/cdalbum/cd/pycd712
+- https://www.vanityfair.com/hollywood/story/super-bowl-2025-kendrick-lamar-halftime
+- https://www.biography.com/musicians/wolfgang-mozart
+- https://www.newyorker.com/culture/culture-desk/the-genuine-vulnerability-of-snoop-doggs-gospel-album
+- https://collider.com/good-not-great-animated-movies-21st-century-ranked/
+- https://www.prestigeonline.com/hk/lifestyle/culture-plus-entertainment/jyp-entertainment-founder-park-jin-young-net-worth-and-things-he-owns/
+- https://www.bostonglobe.com/arts/2018/08/29/janet-jackson-celebrates-michael-jackson-birthday-with-video-remember-time/kEI5B8UJVIvNAikpvX0xFJ/story.html
+- https://collider.com/guardians-of-the-galaxy-soundtrack-download/
+- Led Zeppelin - Stairway To Heaven (Live at Earls Court 1975) https://www.youtube.com/watch?v=Ly6ZhQVnVow

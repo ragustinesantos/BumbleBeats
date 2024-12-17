@@ -1,3 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable no-catch-shadow */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, {useState} from 'react';
 import {
   Image,
@@ -15,19 +18,11 @@ import TrackPlayer from 'react-native-track-player';
 
 export default function PlaylistAccessed({
   route,
-  navigation,
 }: {
   route: any;
-  navigation: any;
 }): React.JSX.Element {
-  const {
-    activeTrack,
-    togglePlayPause,
-    playing,
-    skipToNext,
-    skipToPrevious,
-    setPlaying,
-  } = useActiveTrackContext() || {};
+  const {activeTrack, togglePlayPause, playing, setPlaying} =
+    useActiveTrackContext() || {};
 
   const item = route.params;
   const playlistName = item.playlistName;
@@ -70,7 +65,9 @@ export default function PlaylistAccessed({
       let trackPlayerTracks: TrackObject[] = [];
       for (let i = 0; i < tracks.length; i++) {
         try {
-          const response = await fetch(`https://api.deezer.com/track/${tracks[i].id}`);
+          const response = await fetch(
+            `https://api.deezer.com/track/${tracks[i].id}`,
+          );
           const data = await response.json();
 
           const newTrackObject: TrackObject = {
@@ -111,9 +108,9 @@ export default function PlaylistAccessed({
       if (isShuffling) {
         await TrackPlayer.stop();
         await TrackPlayer.reset();
-        
+
         await TrackPlayer.add(tracks);
-        
+
         if (playing) {
           await TrackPlayer.play();
         }
@@ -124,12 +121,14 @@ export default function PlaylistAccessed({
 
       // Shuffle tracks
       const shuffledTracks = [...tracks].sort(() => Math.random() - 0.5);
-      
+
       // Fetching tracks
       let shuffledTrackPlayerTracks: TrackObject[] = [];
       for (let i = 0; i < shuffledTracks.length; i++) {
         try {
-          const response = await fetch(`https://api.deezer.com/track/${shuffledTracks[i].id}`);
+          const response = await fetch(
+            `https://api.deezer.com/track/${shuffledTracks[i].id}`,
+          );
           const data = await response.json();
 
           const newTrackObject: TrackObject = {
@@ -181,7 +180,7 @@ export default function PlaylistAccessed({
       await TrackPlayer.reset();
       await TrackPlayer.add(trackToPlay);
       await TrackPlayer.play();
-      
+
       if (setPlaying) {
         setPlaying(true);
       }
@@ -200,7 +199,7 @@ export default function PlaylistAccessed({
         await TrackPlayer.reset();
         await TrackPlayer.add(trackToPlay);
         await TrackPlayer.play();
-        
+
         if (setPlaying) {
           setPlaying(true);
         }
@@ -271,7 +270,7 @@ export default function PlaylistAccessed({
       <FlatList
         style={style.songList}
         data={foundSongs}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
           <SongListCard
             artwork={item.artwork}
@@ -285,7 +284,6 @@ export default function PlaylistAccessed({
     </View>
   );
 }
-
 
 const style = StyleSheet.create({
   container: {
